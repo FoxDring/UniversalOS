@@ -10,7 +10,7 @@
 # 优化调整 by https://github.com/laiyujun/Actions_OpenWrt-Amlogic
 #
 
-name: 编译固件（ALL）
+name: N1-ALL
 
 on:
   repository_dispatch:
