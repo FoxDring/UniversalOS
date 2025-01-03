@@ -11,7 +11,7 @@
 # https://github.com/Lancenas/actions-openwrt-helloworld/blob/master/.github/workflows/build-openwrt.yml
 
 
-name: N1-iStore-Mini
+name: N1-ophub-mini
 
 on:
   repository_dispatch:
