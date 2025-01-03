@@ -13,7 +13,7 @@
 # https://github.com/Lancenas/actions-openwrt-helloworld/blob/master/.github/workflows/build-openwrt.yml
 
 
-name: 编译固件（iStore）
+name: N1-iStore-ALL
 
 on:
   repository_dispatch:
