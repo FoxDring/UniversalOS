@@ -1,0 +1,18 @@
+name: "Make OpenWrt using flippy's script"
+author: "https://github.com/ophub/flippy-openwrt-actions"
+description: "Support Amlogic, Rockchip and Allwinner boxes."
+inputs:
+  mode:
+    description: "Select script."
+    required: false
+    default: "flippy"
+
+runs:
+  using: "composite"
+  steps:
+    - run: ${GITHUB_ACTION_PATH}/openwrt_${{ inputs.mode }}.sh
+      shell: bash
+
+branding:
+  icon: "terminal"
+  color: "gray-dark"
