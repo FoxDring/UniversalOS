@@ -27,7 +27,7 @@ sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' ./feeds/luci/collections/luci
 sed -i "s/luci-theme-bootstrap/luci-theme-argon/g" $(find ./feeds/luci/collections/ -type f -name "Makefile")
 
 #修改immortalwrt.lan关联IP
-sed -i "s/192\.168\.[0-9]*\.[0-9]*/192.168.2.250/g" $(find ./feeds/luci/modules/luci-mod-system/ -type f -name "flash.js")
+#sed -i "s/192\.168\.[0-9]*\.[0-9]*/192.168.2.250/g" $(find ./feeds/luci/modules/luci-mod-system/ -type f -name "flash.js")
 
 # Modify some code adaptation
 #sed -i 's/LUCI_DEPENDS.*/LUCI_DEPENDS:=\@\(arm\|\|aarch64\)/g' feeds/luci/applications/luci-app-cpufreq/Makefile
