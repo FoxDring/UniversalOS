@@ -449,7 +449,7 @@ jobs:
       - name: 发布固件
         uses: ncipollo/release-action@main
         with:
-          tag: OpenWrt_armvirt_iStore_${{ env.PACKAGED_OUTPUTDATE }}
+          tag: OpenWrt_armvirt_iStore_$(date +"%Y").${{ env.PACKAGED_OUTPUTDATE }}
           artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/*
           allowUpdates: true
           token: ${{ secrets.GITHUB_TOKEN }}
