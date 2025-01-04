@@ -97,7 +97,7 @@ SCRIPT_DIY_FILE="mk_diy.sh"
 SCRIPT_RK3399_FILE="mk_rk3399_generic.sh"
 
 # Set make.env related parameters
-WHOAMI_VALUE="flippy"
+WHOAMI_VALUE="dring"
 OPENWRT_VER_VALUE="auto"
 SW_FLOWOFFLOAD_VALUE="1"
 HW_FLOWOFFLOAD_VALUE="0"
