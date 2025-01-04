@@ -411,7 +411,7 @@ jobs:
       # - name: 打包固件
         # uses: unifreq/openwrt_packit@master
         # env:
-          # WHOAMI: flippy
+          # WHOAMI: dring
           # OPENWRT_ARMVIRT: openwrt-armvirt/*.tar.gz
           # PACKAGE_SOC: s905d_qemu
           # KERNEL_AUTO_LATEST: true
