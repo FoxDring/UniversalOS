@@ -17,18 +17,18 @@
 
 
 # Uncomment a feed source
-sed -i 's/^#\(.*istore\)/\1/' feeds.conf.default
+#sed -i 's/^#\(.*istore\)/\1/' feeds.conf.default
 
 # Add feed sources
-echo >> feeds.conf.default
+#echo >> feeds.conf.default
 #echo 'src-git helloworld https://github.com/fw876/helloworld' >>feeds.conf.default
 #echo 'src-git passwall https://github.com/xiaorouji/openwrt-passwall' >>feeds.conf.default
-echo 'src-git istore https://github.com/linkease/istore;main' >> feeds.conf.default
-./scripts/feeds update istore
-./scripts/feeds install -d y -p istore luci-app-store
+#echo 'src-git istore https://github.com/linkease/istore;main' >> feeds.conf.default
+#./scripts/feeds update istore
+#./scripts/feeds install -d y -p istore luci-app-store
 
 # Modify default theme（FROM luci-theme-bootstrap CHANGE TO luci-theme-argon-light-green）
-sed -i 's/luci-theme-ifit/luci-theme-argon-light-green/g' ./feeds/luci/collections/luci/Makefile
+#sed -i 's/luci-theme-ifit/luci-theme-argon-light-green/g' ./feeds/luci/collections/luci/Makefile
 
 
 
