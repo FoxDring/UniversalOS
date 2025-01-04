@@ -94,7 +94,7 @@ on:
       script_diy_path:
         description: "Set custom script loading path"
         required: false
-        default: "diy-part3.sh"
+        default: "Scripts/diy-part3.sh"
       openwrt_storage:
         description: "Select image storage type."
         required: false
