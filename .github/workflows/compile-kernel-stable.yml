@@ -179,7 +179,7 @@ jobs:
             - The kernel source code comes from: ${{ inputs.kernel_source }}.
             - The kernel compilation toolchain: ${{ inputs.kernel_toolchain }}.
             - These kernels can be used in Armbian and OpenWrt and can be interchanged with the kernels in kernel_flippy, kernel_stable, and kernel_beta.
-            - 这些内核可以在 Armbian 和 OpenWrt 里使用，可以与 kernel_flippy，kernel_dev 和 kernel_beta 里的内核可以互换使用。
+            - 这些内核可以在 Armbian 和 OpenWrt 里使用。kernel_flippy, kernel_stable, kernel_beta和kernel_dev 的内核可以互换使用。
 
 
 
