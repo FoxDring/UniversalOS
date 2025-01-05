@@ -48,6 +48,7 @@ PACKAGE_OPENWRT_6XY=("r66s" "r68s" "e25" "photonicat" "cm3" "rk3399")
 PACKAGE_SOC_VALUE="all"
 
 # Set the default packaged kernel download repository
+#KERNEL_REPO_URL_VALUE="FoxDring/OpenWRT-Actions"
 KERNEL_REPO_URL_VALUE="ophub/kernel"
 # Set kernel tag: kernel_stable, kernel_rk3588, kernel_rk35xx
 KERNEL_TAGS=("dring" "ophub" "flippy" "dev" "beta" "stable" "h6" "rk3588" "rk35xx")
