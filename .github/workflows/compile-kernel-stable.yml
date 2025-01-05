@@ -70,9 +70,21 @@ on:
       kernel_sign:
         description: "Set the kernel custom signature"
         required: false
-        default: "-dring"
+        default: "-stable"
         type: choice
         options:
+          - -dev
+          - -beta
+          - -stable
+          - -happy-new-year
+          - -dragon-boat-festival
+          - -mid-autumn-festival
+          - -happy-national-day
+          - -merry-christmas
+          - -spring-plowing
+          - -summer-growing
+          - -autumn-harvesting
+          - -winter-storing
           - -ophub
           - -dring
 
@@ -156,13 +168,18 @@ jobs:
         uses: ncipollo/release-action@main
         if: ${{ env.PACKAGED_STATUSS }} == 'success' && !cancelled()
         with:
-          tag: kernel_dring
+          tag: kernel_stable
           artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/*
           allowUpdates: true
           removeArtifacts: false
           replacesArtifacts: true
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
-            The kernel can be used to compile Armbian and OpenWrt.
-            The kernel source code comes from: ${{ inputs.kernel_source }}
-            The kernel compilation toolchain: ${{ inputs.kernel_toolchain }}
+            - The kernel can be used to compile Armbian and OpenWrt.
+            - The kernel source code comes from: ${{ inputs.kernel_source }}.
+            - The kernel compilation toolchain: ${{ inputs.kernel_toolchain }}.
+            - These kernels can be used in Armbian and OpenWrt and can be interchanged with the kernels in kernel_flippy, kernel_stable, and kernel_beta.
+            - 这些内核可以在 Armbian 和 OpenWrt 里使用，可以与 kernel_flippy，kernel_dev 和 kernel_beta 里的内核可以互换使用。
+
+
+
