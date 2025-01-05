@@ -205,7 +205,7 @@ jobs:
             - This is a beta version kernel. The kernel source code and patches used are the same as kernel_dev, which means that additional third-party drivers and patches have been added on top of kernel_stable. The difference is that kernel_dev is compiled in an ARM64 (Armbian/Debian) system environment.
             - 这是beta版内核，使用的内核源码及补丁与 kernel_dev 相同，即在 kernel_stable 的基础上添加了更多的第三方驱动和补丁，差异是kernel_dev编译于 ARM64（Armbian/Debian） 系统环境。
             - These kernels can be used in Armbian and OpenWrt and can be interchanged with the kernels in kernel_flippy, kernel_stable, and kernel_beta.
-            - 这些内核可以在 Armbian 和 OpenWrt 里使用，可以与 kernel_flippy，kernel_stable 和 kernel_beta 里的内核可以互换使用。
+            - 这些内核可以在 Armbian 和 OpenWrt 里使用。kernel_flippy, kernel_stable, kernel_beta和kernel_dev 的内核可以互换使用。
 
 
 
