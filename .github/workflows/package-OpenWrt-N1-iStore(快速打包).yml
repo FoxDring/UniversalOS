@@ -14,7 +14,7 @@
 # https://github.com/Lancenas/actions-openwrt-helloworld/blob/master/.github/workflows/build-openwrt.yml
 
 
-name: package-OpenWrt-N1-iStore(快速打包).yml
+name: Package OpenWrt N1 iStore (快速打包)
 
 on:
   repository_dispatch:
