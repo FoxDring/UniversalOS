@@ -14,7 +14,7 @@
 # https://github.com/Lancenas/actions-openwrt-helloworld/blob/master/.github/workflows/build-openwrt.yml
 
 
-name: compile-OpenWrt-N1-iStore(源始包终)
+name: Compile OpenWrt N1 iStore (源始包终)
 
 on:
   repository_dispatch:
