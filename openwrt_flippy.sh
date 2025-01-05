@@ -50,7 +50,7 @@ PACKAGE_SOC_VALUE="all"
 # Set the default packaged kernel download repository
 KERNEL_REPO_URL_VALUE="ophub/kernel"
 # Set kernel tag: kernel_stable, kernel_rk3588, kernel_rk35xx
-KERNEL_TAGS=("stable" "rk3588" "rk35xx")
+KERNEL_TAGS=("stable" "dring" "rk3588" "rk35xx")
 STABLE_KERNEL=("6.1.y" "6.6.y")
 RK3588_KERNEL=("5.10.y")
 RK35XX_KERNEL=("5.10.y")
