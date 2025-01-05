@@ -223,11 +223,12 @@ init_var() {
     KERNEL_TAGS_TMP=()
     for kt in "${PACKAGE_OPENWRT[@]}"; do
         if [[ " ${PACKAGE_OPENWRT_RK3588[@]} " =~ " ${kt} " ]]; then
-            KERNEL_TAGS_TMP+=("rk3588")
+            _TMP+=("rk3588")
         elif [[ " ${PACKAGE_OPENWRT_RK35XX[@]} " =~ " ${kt} " ]]; then
             KERNEL_TAGS_TMP+=("rk35xx")
         else
-            KERNEL_TAGS_TMP+=("stable")
+            #KERNEL_TAGS_TMP+=("stable")
+            KERNEL_TAGS_TMP+=("dev")
         fi
     done
     # Remove duplicate kernel tags
@@ -238,7 +239,8 @@ init_var() {
     echo -e "${INFO} Kernel tags: [ $(echo ${KERNEL_TAGS[@]} | xargs) ]"
 
     # Reset STABLE_KERNEL options
-    [[ -n "${KERNEL_VERSION_NAME}" && " ${KERNEL_TAGS[@]} " =~ " stable " ]] && {
+    #[[ -n "${KERNEL_VERSION_NAME}" && " ${KERNEL_TAGS[@]} " =~ " stable " ]] && {
+    [[ -n "${KERNEL_VERSION_NAME}" && " ${KERNEL_TAGS[@]} " =~ " dev " ]] && {
         oldIFS="${IFS}"
         IFS="_"
         STABLE_KERNEL=(${KERNEL_VERSION_NAME})
@@ -468,7 +470,8 @@ make_openwrt() {
                 vb="rk35xx"
             else
                 build_kernel=(${STABLE_KERNEL[@]})
-                vb="stable"
+                #vb="stable"
+                vb="dev"
             fi
 
             k="1"
