@@ -4,7 +4,7 @@
 # Copyright (C) 2021 https://github.com/ophub/amlogic-s9xxx-armbian
 #==========================================================================
 
-name: Compile the kernel
+name: compile-kernel-stable.yml
 
 on:
   repository_dispatch:
