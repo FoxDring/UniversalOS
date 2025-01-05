@@ -303,7 +303,7 @@ jobs:
           cd openwrt
           $GITHUB_WORKSPACE/$DIY_P2_SH
 
-      - name: 下载软件包
+      - name: 下载packages
         id: package
         run: |
           cd openwrt
@@ -313,7 +313,6 @@ jobs:
           find dl -size -1024c -exec rm -f {} \;
           echo "硬盘详情："
           df -Th
-
 
       - name: 编译固件
         id: compile
@@ -334,6 +333,7 @@ jobs:
           mkdir openwrt-armvirt
           mkdir /workdir/upload
           cp openwrt/bin/targets/*/*/*.tar.gz /workdir/upload/          
+          cp openwrt/.config /workdir/upload/ 
           mv openwrt/bin/targets/*/*/*.tar.gz openwrt-armvirt/
           echo -e "\n"
           echo "列出空间占用前10的目录或文件："
@@ -349,6 +349,25 @@ jobs:
           echo "列出空间占用前10的目录或文件："
           sudo du -h --max-depth=1 /workdir |sort -nr | head -10
           
+          # Generate sha256sum file
+          #cd /workdir/upload/
+          #for file in *; do [[ ! -d "${file}" ]] && sha256sum "${file}" >"${file}.sha"; done
+          
+          # Set output information
+          df -hT ${PWD}
+          echo "status=success" >> ${GITHUB_OUTPUT}
+
+      - name: Upload OpenWrt armvirt file to Release
+        uses: ncipollo/release-action@main
+        if: ${{ steps.clean.outputs.status }} == 'success' && !cancelled()
+        with:
+          tag: ${{ steps.codes.outputs.build_tag }}
+          artifacts: openwrt/output/*
+          allowUpdates: true
+          removeArtifacts: false
+          replacesArtifacts: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
       # - name: Download armvirt file
         # id: download
         # working-directory: /builder
