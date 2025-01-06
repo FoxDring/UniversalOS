@@ -358,8 +358,8 @@ jobs:
           ls -l
           
           # Generate sha256sum file
-          cd /workdir/upload/
-          for file in *; do [[ ! -d "${file}" ]] && sha256sum "${file}" >"${file}.sha"; done
+          #cd /workdir/upload/
+          #for file in *; do [[ ! -d "${file}" ]] && sha256sum "${file}" >"${file}.sha"; done
           
           echo -e "\n"
           echo "列出空间占用前10的目录或文件："
