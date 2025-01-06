@@ -401,7 +401,8 @@ jobs:
           #ln -sf /workdir/openwrt ${GITHUB_WORKSPACE}/openwrt
           #ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
           #ln -sf /workdir/openwrt-armvirt $GITHUB_WORKSPACE/openwrt-armvirt
-          ln -sf /workdir $GITHUB_WORKSPACE
+          #ln -sf /workdir $GITHUB_WORKSPACE
+          ln -sf /workdir ${GITHUB_WORKSPACE}
           
           latest_version="$(curl -s \
                               -H "Accept: application/vnd.github+json" \
