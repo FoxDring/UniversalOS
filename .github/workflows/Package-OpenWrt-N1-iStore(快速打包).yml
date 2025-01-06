@@ -395,10 +395,10 @@ jobs:
           releases_tag_keywords="OpenWrt_dring"
           
           #armvirt_tarfile_path="openwrt/bin/targets/armvirt/64"
-          armvirt_tarfile_path="openwrt-armvirt"
+          armvirt_tarfile_path="openwrt/openwrt-armvirt"
           [[ -d "${armvirt_tarfile_path}" ]] || mkdir -p ${armvirt_tarfile_path}
-          #ln -sf /workdir/openwrt ${GITHUB_WORKSPACE}/openwrt
-          #ln -sf /workdir/openwrt-armvirt ${GITHUB_WORKSPACE}/openwrt-armvirt
+          ln -sf /workdir/openwrt ${GITHUB_WORKSPACE}/openwrt
+          #ln -sf /workdir/openwrt/openwrt-armvirt ${GITHUB_WORKSPACE}/openwrt/openwrt-armvirt
           
           latest_version="$(curl -s \
                               -H "Accept: application/vnd.github+json" \
