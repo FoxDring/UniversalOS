@@ -396,13 +396,12 @@ jobs:
           
           #armvirt_tarfile_path="openwrt/bin/targets/armvirt/64"
           armvirt_tarfile_path="openwrt-armvirt"
-          cd /workdir/
+          #cd /workdir/
           [[ -d "${armvirt_tarfile_path}" ]] || mkdir -p ${armvirt_tarfile_path}
           #ln -sf /workdir/openwrt ${GITHUB_WORKSPACE}/openwrt
           #ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
           #ln -sf /workdir/openwrt-armvirt $GITHUB_WORKSPACE/openwrt-armvirt
           #ln -sf /workdir $GITHUB_WORKSPACE
-          ln -sf /workdir ${GITHUB_WORKSPACE}
           
           latest_version="$(curl -s \
                               -H "Accept: application/vnd.github+json" \
@@ -454,7 +453,7 @@ jobs:
         env:
           SELECT_PACKITPATH: openwrt_packit
           #OPENWRT_ARMVIRT: openwrt/bin/targets/*/*/*rootfs.tar.gz
-          OPENWRT_ARMVIRT: openwrt-armvirt/*rootfs.tar.gz
+          OPENWRT_ARMVIRT: openwrt-armvirt/*.tar.gz
           PACKAGE_SOC: ${{ inputs.openwrt_soc }}
           KERNEL_REPO_URL: ${{ inputs.kernel_repo }}
           KERNEL_VERSION_NAME: ${{ inputs.openwrt_kernel }}
