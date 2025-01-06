@@ -342,9 +342,9 @@ jobs:
           df -hT
           mkdir openwrt-armvirt
           mkdir /workdir/upload
-          cp openwrt/bin/targets/*/*/*.tar.gz /workdir/upload/          
-          cp openwrt/.config /workdir/upload/config 
-          mv openwrt/bin/targets/*/*/*.tar.gz openwrt-armvirt/
+          #cp openwrt/bin/targets/*/*/*.tar.gz /workdir/upload/          
+          #cp openwrt/.config /workdir/upload/config 
+          #mv openwrt/bin/targets/*/*/*.tar.gz openwrt-armvirt/
           echo -e "\n"
           echo "列出空间占用前10的目录或文件："
           sudo du -h --max-depth=1 /workdir/openwrt |sort -nr | head -10
@@ -476,7 +476,7 @@ jobs:
           # 以管理员身份操作文件
           sudo mv /opt/openwrt_packit/output/* /workdir/upload/
           sudo mv /workdir/openwrt_packit/output/* /workdir/upload/
-          #sudo mv /workdir/openwrt-armvirt/* /workdir/upload/
+          sudo mv /workdir/openwrt-armvirt/* /workdir/upload/
           echo "status=success" >> ${GITHUB_OUTPUT}
 
       # - name: Upload OpenWrt Firmware to Release
