@@ -469,8 +469,14 @@ jobs:
       - name: 整理文件到上传目录
         id: move
         run: |
-          mv /opt/openwrt_packit/output/* /workdir/upload/
-          #mv /workdir/openwrt-armvirt/* /workdir/upload/
+          # 修改用户组权限
+          #sudo chown $USER:$GROUPS /opt/openwrt_packit/output
+          # 修改文件夹权限
+          #sudo chmod -R 777 /opt/openwrt_packit/output
+          # 以管理员身份操作文件
+          sudo mv /opt/openwrt_packit/output/* /workdir/upload/
+          sudo mv /workdir/openwrt_packit/output/* /workdir/upload/
+          #sudo mv /workdir/openwrt-armvirt/* /workdir/upload/
           echo "status=success" >> ${GITHUB_OUTPUT}
 
       # - name: Upload OpenWrt Firmware to Release
