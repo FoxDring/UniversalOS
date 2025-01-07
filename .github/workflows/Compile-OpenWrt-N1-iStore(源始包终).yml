@@ -480,8 +480,8 @@ jobs:
           #sudo mv /workdir/openwrt_packit/output/* /workdir/upload/
           #sudo mv /workdir/openwrt-armvirt/* /workdir/upload/
           # Generate sha256sum file
-          cd /workdir/upload/
-          for file in *; do [[ ! -d "${file}" ]] && sha256sum "${file}" >"${file}.sha"; done 
+          #cd /workdir/upload/
+          #for file in *; do [[ ! -d "${file}" ]] && sha256sum "${file}" >"${file}.sha"; done 
           echo "status=success" >> ${GITHUB_OUTPUT}
 
       # - name: Upload OpenWrt Firmware to Release
