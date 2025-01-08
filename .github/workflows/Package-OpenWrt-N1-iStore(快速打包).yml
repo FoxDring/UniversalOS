@@ -433,6 +433,9 @@ jobs:
           pwd
           cd /workdir/openwrt-armvirt
           ls -al
+          echo "修改*rootfs.tar.gz权限"
+          sudo chmod 777 *rootfs.tar.gz
+          ls -al
           echo -e "\n"
           echo "列出空间占用前10的目录或文件："
           sudo du -h --max-depth=1 /workdir/openwrt-armvirt |sort -nr | head -10         
