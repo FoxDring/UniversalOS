@@ -444,7 +444,7 @@ jobs:
       - name: Clone packit source code
         id: packit
         working-directory: /workdir
-        if: ${{ steps.clean.outputs.status }} == 'success' && !cancelled()
+        if: ${{ steps.download.outputs.status }} == 'success' && !cancelled()
         run: |
           SCRIPT_REPO_URL="https://github.com/unifreq/openwrt_packit"
           SCRIPT_REPO_BRANCH="master"
@@ -453,6 +453,8 @@ jobs:
           ln -sf /workdir/${SELECT_PACKITPATH} /opt/${SELECT_PACKITPATH}
           echo "硬盘详情："
           df -Th
+          pwd
+          ls -al
           echo "status=success" >> ${GITHUB_OUTPUT}
           
       - name: Package OpenWrt Firmware
