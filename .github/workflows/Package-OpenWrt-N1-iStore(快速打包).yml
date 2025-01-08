@@ -355,7 +355,7 @@ jobs:
           df -hT
           echo -e "\n"
           echo "/workdir路径文件"
-          ls -l
+          ls -al
           
           # Generate sha256sum file
           #cd /workdir/upload/
@@ -402,7 +402,9 @@ jobs:
           #ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
           ln -sf /workdir/openwrt-armvirt ${GITHUB_WORKSPACE}/openwrt-armvirt
           #ln -sf /workdir $GITHUB_WORKSPACE
-          
+          echo "显示运行目录及文件"
+          pwd
+          ls -al
           
           latest_version="$(curl -s \
                               -H "Accept: application/vnd.github+json" \
@@ -425,9 +427,11 @@ jobs:
           curl -fsSL "${latest_url}" -o "${armvirt_tarfile_path}/${openwrt_filename}"
           #[[ "${?}" -ne "0" ]] && echo "Invalid OpenWrt rootfs download address." && exit 1
           [[ "${?}" -ne "0" ]] && echo "Invalid OpenWrt rootfs download address."
-          
+
+          echo "显示运行目录及文件"
+          pwd
           df -hT ${PWD}
-          ls -l
+          ls -al
           echo -e "\n"
           echo "列出空间占用前10的目录或文件："
           sudo du -h --max-depth=1 /workdir/openwrt-armvirt |sort -nr | head -10         
