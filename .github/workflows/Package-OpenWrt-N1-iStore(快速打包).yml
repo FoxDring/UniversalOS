@@ -429,8 +429,8 @@ jobs:
           [[ "${?}" -ne "0" ]] && echo "Invalid OpenWrt rootfs download address."
 
           echo "显示运行目录及文件"
-          pwd
           df -hT ${PWD}
+          pwd
           cd /workdir/openwrt-armvirt
           ls -al
           echo -e "\n"
