@@ -45,7 +45,8 @@ PACKAGE_OPENWRT_RK35XX=("watermelon-pi" "zcube1-max" "jp-tvbox" "ht2" "e20c" "h2
 # Set the list of devices using the [ 6.x.y ] kernel
 PACKAGE_OPENWRT_6XY=("r66s" "r68s" "e25" "photonicat" "cm3" "rk3399")
 # All are packaged by default, and independent settings are supported, such as: [ s905x3_s905d_rock5b ]
-PACKAGE_SOC_VALUE="all"
+#PACKAGE_SOC_VALUE="all"
+PACKAGE_SOC_VALUE="s905d_qemu"
 
 # Set the default packaged kernel download repository
 #KERNEL_REPO_URL_VALUE="FoxDring/OpenWrt-Actions"
