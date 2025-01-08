@@ -440,6 +440,8 @@ jobs:
           ln -sf /workdir/${SELECT_PACKITPATH} /opt/${SELECT_PACKITPATH}
           echo "硬盘详情："
           df -Th
+          pwd
+          ls -al
           echo "status=success" >> ${GITHUB_OUTPUT}
           
       - name: Package OpenWrt Firmware
