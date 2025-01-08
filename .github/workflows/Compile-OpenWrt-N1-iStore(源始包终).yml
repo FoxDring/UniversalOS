@@ -361,10 +361,13 @@ jobs:
           cd /workdir/upload/
           for file in *; do [[ ! -d "${file}" ]] && sha256sum "${file}" >"${file}.sha"; done
           
+          echo "显示运行目录及文件"
+          df -hT ${PWD}
+          pwd
+          ls -al
           echo -e "\n"
           echo "列出空间占用前10的目录或文件："
           sudo du -h --max-depth=1 /workdir |sort -nr | head -10                    
-          df -hT ${PWD}
           echo "status=success" >> ${GITHUB_OUTPUT}
 
       - name: Upload OpenWrt armvirt file to Release
