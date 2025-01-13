@@ -4,3 +4,6 @@ Please refer to the relevant instructions in the [user manual](../documents) for
 
 OpenWrt 的个性化定制方法，请参考 [使用文档](../documents/README.cn.md) 中的相关说明。
 
+文件来源：
+https://github.com/ophub/amlogic-s9xxx-openwrt/tree/main/config
+
