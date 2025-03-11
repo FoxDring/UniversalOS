@@ -137,4 +137,4 @@
 
 
 # [NestingDNS](https://github.com/217heidai/NestingDNS)
-DNS三大神器 [AdGuardHome](https://github.com/AdguardTeam/AdGuardHome)、[MosDNS](https://github.com/IrineSistiana/mosdns)、[SmartDNS](https://github.com/pymumu/smartdns)全都要,套娃使用三大神器，试图找到一套最佳实践.
+DNS三大神器 [AdGuardHome](https://github.com/AdguardTeam/AdGuardHome)、[MosDNS](https://github.com/IrineSistiana/mosdns)、[SmartDNS](https://github.com/pymumu/smartdns)全都要，套娃使用三大神器，试图找到一套最佳实践。
