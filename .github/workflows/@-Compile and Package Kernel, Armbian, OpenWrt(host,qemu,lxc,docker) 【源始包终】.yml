@@ -1,0 +1,1653 @@
+
+
+
+
+#================================================================================
+# Description: Compile Kernel
+# Copyright (C) https://github.com/unifreq/openwrt_packit
+# Copyright (C) https://github.com/ophub/kernel
+# Copyright (C) https://github.com/ophub/amlogic-s9xxx-armbian
+# Copyright (C) https://github.com/ophub/amlogic-s9xxx-armbian/blob/main/compile-kernel/README.cn.md
+# Copyright (C) https://github.com/ophub/kernel/blob/main/README.cn.md
+#================================================================================
+
+#================================================================================
+# Description: Build Armbian
+# Copyright (C) https://github.com/ophub/kernel
+# Copyright (C) https://github.com/ophub/amlogic-s9xxx-armbian
+# Copyright (C) https://github.com/ophub/amlogic-s9xxx-armbian/blob/main/documents/README.cn.md
+
+
+#================================================================================
+
+#================================================================================
+# Description: Build OpenWrt firmwares
+# Copyright (C) https://github.com/unifreq/openwrt_packit
+# Copyright (C) https://github.com/ophub/kernel
+# Copyright (C) https://github.com/ophub/flippy-openwrt-actions
+# Copyright (C) https://github.com/ophub/amlogic-s9xxx-openwrt
+# Copyright (C) https://github.com/breakingbadboy/OpenWrt
+# Copyright (C) https://github.com/laiyujun/Actions_OpenWrt-Amlogic
+# Copyright (C) https://github.com/P3TERX/Actions-OpenWrt
+#--------------------------------------------------------------------------------
+# Description: Build OpenWrt docker image
+# Instructions: https://github.com/docker/build-push-action
+# Build and Push to: https://hub.docker.com/
+# Copyright (C) https://github.com/ophub/amlogic-s9xxx-openwrt/blob/main/.github/workflows/build-the-docker-image-of-openwrt.yml
+# Copyright (C) https://github.com/breakingbadboy/OpenWrt/blob/main/.github/workflows/ARMv8_Docker_BuildX.yml
+# Copyright (C) https://github.com/ophub/amlogic-s9xxx-openwrt/blob/main/config/docker/make_docker_image.sh
+# Copyright (C) https://github.com/unifreq/openwrt_packit/blob/master/mk_openwrt_dockerimg.sh
+# Copyright (C) https://github.com/breakingbadboy/OpenWrt/blob/main/opt/docker/buildImageX.sh
+# Copyright (C) 
+#================================================================================
+
+
+
+
+# 【参考同类Action配置】：
+# https://github.com/ophub/amlogic-s9xxx-openwrt/blob/main/.github/workflows/build-openwrt.yml
+# https://github.com/Lancenas/actions-openwrt-helloworld/blob/master/.github/workflows/build-openwrt.yml
+
+
+
+
+# Start ================================================================================
+
+name: Compile and Package Kernel, Armbian, OpenWrt(host,qemu,lxc,docker) 【源始包终】
+
+
+
+# Definition ================================================================================
+
+on:
+  repository_dispatch:
+    # release:
+      # types: published
+    # watch:
+      # types: started    
+    # schedule:
+      # - cron: 0 */18 * * *
+  workflow_dispatch:
+    inputs:
+      ssh:  # 【Ctrl+C to enter, Ctrl+D to exit】
+        # 在 Actions 日志页面等待执行到SSH connection to Actions步骤，复制显示得SSH连接命令粘贴到终端内执行，或者复制显示的链接在浏览器中打开使用网页终端。（网页终端可能会遇到黑屏的情况，按 Ctrl+C 即可）
+        # cd openwrt && make menuconfig
+        # 完成后按Ctrl+D组合键或执行exit命令退出，后续编译工作将自动进行。
+        # TIPS: 固件目录下有个config.seed或者config, 在Action里使用ssh容易被封号！
+        description: "Select whether to run the SSH connection to Actions"
+        required: false
+        default: "false"
+        options:
+          - true
+          - false
+          - others
+      kernel_steps:
+        description: "Select whether to run the Kernel steps"
+        required: false
+        default: "true"
+        options:
+          - true
+          - false
+          - others
+      armbian_steps:
+        description: "Select whether to run the Armbian steps"
+        required: false
+        default: "true"
+        options:
+          - true
+          - false
+          - others
+      openwrt_steps:
+        description: "Select whether to run the OpenWrt steps"
+        required: false
+        default: "true"
+        options:
+          - true
+          - false
+          - others
+
+      kernel_source:
+        description: "Select the kernel source"
+        required: false
+        default: "unifreq"
+        type: choice
+        options:
+          - unifreq
+          - codesnas
+          - others
+      kernel_version:
+        description: "Select kernel version"
+        required: false
+        default: "6.1.y_6.12.y"
+        type: choice
+        options:
+          - 5.4.y
+          - 5.10.y
+          - 5.15.y
+          - 5.4.y_5.10.y
+          - 5.4.y_5.15.y
+          - 5.10.y_5.15.y
+          - 5.15.y_6.1.y
+          - 6.1.y
+          - 6.6.y
+          - 6.12.y
+          - 6.1.y_6.6.y
+          - 6.1.y_6.12.y
+          - 6.6.y_6.12.y
+          - others
+      kernel_auto:
+        description: "Select whether to use the latest kernel"
+        required: false
+        default: true
+        type: boolean
+      kernel_package:
+        description: "Select kernel compile package list"
+        required: false
+        default: "all"
+        type: choice
+        options:
+          - all
+          - dtbs
+          - others
+      kernel_config:
+        description: "Set the path of kernel .config"
+        required: false
+        default: "Config/Kernel/kernel-config/release/general"
+        type: choice
+        options:
+          - Config/Kernel/kernel-config/release/general
+          - false
+          - others
+      kernel_patch:
+        description: "Set the directory for kernel patches"
+        required: false
+        default: "Config/Kernel/kernel-patch/beta"
+        type: choice
+        options:
+          - Config/Kernel/kernel-patch/beta
+          - false
+          - others
+      kernel_autopatch:
+        description: "Set whether to use kernel patches"
+        required: false
+        default: "true"
+        type: choice
+        options:
+          - true
+          - false
+          - others
+      kernel_toolchain:
+        description: "Select the kernel compilation toolchain"
+        required: false
+        default: "gcc"
+        type: choice
+        options:
+          - clang
+          - gcc
+          - gcc-11.3
+          - gcc-12.2
+          - gcc-12.3
+          - gcc-13.2
+          - gcc-13.3
+          - others
+      kernel_compress:
+        description: "Set the kernel initrd compression format"
+        required: false
+        default: "xz"
+        type: choice
+        options:
+          - xz
+          - gzip
+          - zstd
+          - lzma
+          - others
+      kernel_sign:
+        description: "Set the kernel custom signature"
+        required: false
+        default: "-dring"
+        type: choice
+        options:
+          - -dring
+          - -ophub
+          - -dev
+          - -beta
+          - -stable
+          - -happy-new-year
+          - -dragon-boat-festival
+          - -mid-autumn-festival
+          - -happy-national-day
+          - -merry-christmas
+          - -spring-plowing
+          - -summer-growing
+          - -autumn-harvesting
+          - -winter-storing
+          - -others
+
+      kernel_repo:  #用于编译系统所需要的的kernel选择
+        description: "Set the kernel repository"
+        required: false
+        default: "ophub/kernel"
+        type: choice
+        options:
+          - FoxDring/UniversalOS
+          - ophub/kernel
+          - breakingbadboy/OpenWrt
+          - breakings/OpenWrt
+          - others
+      kernel_tags:  #用于编译系统所需要的的kernel选择
+        description: "Set the kernel repository tags"
+        required: false
+        default: "dev"
+        type: choice
+        options:
+          - dring
+          - ophub
+          - flippy
+          - dev
+          - beta
+          - stable
+          - h6
+          - rk3588          
+          - rk35xx
+          - others
+
+      device_soc:
+        description: "Select device soc."
+        required: false
+        default: "s905d_qemu"
+        type: choice
+        options:
+          - all
+          - s905d_qemu
+          - s922x_s905x3_s905x2_s912_s905d_s905
+          - ak88
+          - beikeyun
+          - cm3
+          - e20c
+          - e25
+          - e52c
+          - e54c
+          - ht2
+          - h28k
+          - h66k
+          - h68k
+          - h69k
+          - h69k-max
+          - h88k
+          - h88k-v3
+          - l1pro
+          - photonicat
+          - qemu
+          - r66s
+          - r68s
+          - jp-tvbox
+          - watermelon-pi
+          - rock5b
+          - rock5c
+          - rk3399
+          - s905
+          - s905d
+          - s905x2
+          - s905x3
+          - s912
+          - s922x
+          - s922x-n2
+          - vplus
+          - zcube1-max
+          - others
+          - diy
+      device_board:
+        description: "Select device board"
+        required: false
+        default: "s905d"
+        type: choice
+        options:
+          - all
+          - s905w_s905x_s905mb_s905l3a_s905l3b_s905x2_s905x3_s912_s922x_s922x-ct2000_s922x-reva
+          - s905w_s905x_s905x-b860h_s905x-t95_s905x2_s905x3_s905x3-x88-pro-x3_s912_s912-m8s-pro_s912-phicomm-t1_s912-t95z-plus
+          - s905x3-x88-pro-x3_s912-m8s-pro_s905x-t95_s912-t95z-plus_s905l3-unt400g1_s905lb-r3300l
+          - s912-x92_s922x_s922x-ct2000_s922x-reva_seewo-sv21_smart-am40_station-m1_sw799_swan1-w28
+          - tanix-tx6_tb-ls3399_tn3399_tpm312_tqc-a01_tvi3315a_vplus_wxy-oec_xiaobao_yskj_zcube1-max_zk-r39a_zysj
+          - a311d
+          - beikeyun
+          - chainedbox
+          - crrc
+          - dg3399
+          - dg-tn3568
+          - dlfr100
+          - e20c
+          - e25
+          - eaidk-610
+          - emb3531
+          - fine3399
+          - firefly-rk3399
+          - fmx1-pro
+          - jp-tvbox
+          - h28k
+          - h66k
+          - h68k
+          - h69k
+          - h88k
+          - h88k-v3
+          - h96-max-m2
+          - hs530r
+          - hugsun-x99
+          - ipc-r
+          - king3399
+          - kylin3399
+          - lckfb-tspi
+          - leez
+          - lx-r3s
+          - mrkaio-m68s
+          - nanopc-t6
+          - nanopi-r5c
+          - nanopi-r5s
+          - orangepi-5-plus
+          - panther-x2
+          - r66s
+          - r68s
+          - renegade-rk3328
+          - rk3318-box
+          - rock5b
+          - rock5c
+          - ruisen-box
+          - s905
+          - s905-beelink-mini
+          - s905-mxqpro-plus
+          - s905d
+          - s905d-ki-pro
+          - s905d-sml5442tw
+          - s905l
+          - s905l-aurora-1s
+          - s905l-b860av21u
+          - s905l-mg101
+          - s905l2
+          - s905l2-e900v21e
+          - s905l2-wojia
+          - s905l3
+          - s905l3-cm211
+          - s905l3-unt400g1
+          - s905l3-unt402a
+          - s905l3a
+          - s905l3a-cm311
+          - s905l3a-m401a
+          - s905l3b
+          - s905l3b-e900v21d
+          - s905l3b-e900v22d
+          - s905l3b-e900v22e
+          - s905l3b-ip103h
+          - s905l3b-rg020et-ca
+          - s905l3b-unt403a
+          - s905lb-ipbs9505
+          - s905lb-q96-mini
+          - s905lb-r3300l
+          - s905mb
+          - s905w
+          - s905w-w95
+          - s905w-x96-mini
+          - s905w-x96w
+          - s905x
+          - s905x-b860h
+          - s905x-nexbox-a95x
+          - s905x-t95
+          - s905x-tbee
+          - s905x-tx9
+          - s905x2
+          - s905x2-km3
+          - s905x2-x96max-2g
+          - s905x3
+          - s905x3-2101
+          - s905x3-a100
+          - s905x3-a95xf3
+          - s905x3-a95xf3-gb
+          - s905x3-b
+          - s905x3-h96max
+          - s905x3-hk1
+          - s905x3-ip1001m
+          - s905x3-q1
+          - s905x3-q2
+          - s905x3-tx3
+          - s905x3-tx3-bz
+          - s905x3-ugoosx3
+          - s905x3-whale
+          - s905x3-x88-pro-x3
+          - s905x3-x96air
+          - s905x3-x96air-gb
+          - s905x3-x96max
+          - s912
+          - s912-h96pro-plus
+          - s912-m8s-pro
+          - s912-nexbox-a1
+          - s912-nexbox-a2
+          - s912-onecloudpro
+          - s912-phicomm-t1
+          - s912-t95z-plus
+          - s912-tx8-max
+          - s912-tx9-pro-2g
+          - s912-tx9-pro-3g
+          - s912-x92
+          - s912-zyxq-fake
+          - s922x
+          - s922x-ct2000
+          - s922x-gtking
+          - s922x-gtkingpro-h
+          - s922x-odroid-n2
+          - s922x-reva
+          - s922x-ugoos-am6
+          - seewo-sv21
+          - smart-am40
+          - station-m1
+          - swan1-w28
+          - sw799
+          - tanix-tx6
+          - tb-ls3399
+          - tn3399
+          - tpm312
+          - tqc-a01
+          - tvi3315a
+          - vplus
+          - wxy-oec
+          - xiaobao
+          - yskj
+          - zcube1-max
+          - zk-r39a
+          - zysj
+          - others
+          - diy
+      # customize_rk3399:
+        # description: "Set customize rk3399 devices"
+        # required: false
+        # default: "tvi3315a:rk3399-tvi3315a.dtb/sw799:rk3399-bozz-sw799.dtb"
+
+      system_storage:
+        description: "Select system image storage type."
+        required: false
+        default: "save"
+        type: choice
+        options:
+          - save
+          - temp
+      builder_name:
+        description: "Set system builder signature"
+        required: false
+        default: "dring"
+        type: choice
+        options:
+          - dring
+          - ophub
+          - flippy
+          - others
+
+      armbian_version:
+        description: "Select the Armbian version."
+        required: false
+        default: "noble"
+        type: choice
+        options:
+          - noble  # Ubuntu 24.04
+          - jammy  # Ubuntu 22.04
+          - bookworm  # Debian 12
+          - bullseye  # Debian 11
+          - others
+      armbian_download:
+        description: "Select the Armbian download path."
+        required: false
+        default: "release"
+        type: choice
+        options:
+          - release  # from Github release
+          - url  # from https://armbian.tnahosting.net/dl/odroidn2/archive/
+          - others
+      armbian_url:
+        description: "Set Armbian download url."
+        required: false
+        default: ""
+      armbian_fstype:
+        description: "Select Armbian rootfs type."
+        required: false
+        default: "ext4"
+        type: choice
+        options:
+          - ext4
+          - btrfs
+
+      source_branch:
+        description: "Select the OpenWrt source branch"
+        required: false
+        # 选择建议——深入解析 OpenWRT、LEDE 与 ImmortalWRT：三大路由器固件对比 https://aoun.ltd/?p=124
+        #OpenWrt：如果您需要一个经过长期验证的稳定系统，且对全球社区资源有需求，OpenWRT是首选。https://github.com/openwrt/openwrt
+        #LEDE：如果您希望体验更快速的更新和更高的代码质量，Lean's LEDE能满足您的需求。https://github.com/coolsnowwolf/lede    
+        #ImmortalWrt：如果您是国内用户，想要开箱即用的丰富功能，且需要针对国内网络环境的优化，ImmortalWrt是最佳选择。https://github.com/immortalwrt/immortalwrt        
+        default: "lede-master"
+        type: choice
+        options:
+          - openwrt-main
+          - lede-master
+          - immortalwrt-master
+          - others
+      package_scripts:
+        description: "Set the OpenWrt [package] scripts repository"
+        required: false
+        default: "FoxDring/UniversalOS@main"
+        type: choice
+        options:
+          - FoxDring/UniversalOS@main
+          - ophub/flippy-openwrt-actions@main
+          - unifreq/openwrt_packit@master
+          - others
+      script_diy_path:
+        description: "Set the OpenWrt custom script loading path"
+        required: false
+        default: "Scripts/OpenWrt/DIY/${{ inputs.source_branch }}/diy-part3.sh"
+      gzip_imgs:
+        description: "Set OpenWrt package file compression format"
+        required: false
+        default: ".xz"
+        type: choice
+        options:
+          - auto
+          - .xz
+          - .gz
+          - .zst
+          - .zip
+          - .7z
+          - others
+      docker_hub:
+        description: "Set OpenWrt docker image"
+        required: false
+        default: "dring/openwrt-aarch64"
+        type: choice
+        options:
+          - foxdring/openwrt-aarch64
+          - ophub/openwrt-aarch64
+          - unifreq/openwrt-aarch64
+          - breakingbadboy/openwrt-aarch64
+          - others
+
+
+
+# Env ================================================================================
+
+env:
+  TZ: Asia/Shanghai
+  #ARMBIAN_URL: ""
+  ARMBIAN_ROOTFS_SH: Scripts/Armbian/armbian_rootfs.sh
+  # REPO_URL: https://github.com/coolsnowwolf/lede
+  # REPO_BRANCH: master
+  # FEEDS_CONF: feeds.conf.default
+  FEEDS_CONF: Config/OpenWrt/openwrt-config/${{ inputs.source_branch }}/feeds.conf.default
+  CONFIG_FILE: Config/OpenWrt/openwrt-config/${{ inputs.source_branch }}/OpenWrt_${{ inputs.source_branch }}_dring.config
+  DIY_PKG_SH: Scripts/OpenWrt/DIY/Packages.sh
+  DIY_P1_SH: Scripts/OpenWrt/DIY/${{ inputs.source_branch }}/diy-part1.sh
+  DIY_P2_SH: Scripts/OpenWrt/DIY/${{ inputs.source_branch }}/diy-part2.sh
+  DIY_P3_SH: Scripts/OpenWrt/DIY/${{ inputs.source_branch }}/diy-part3.sh
+  DOCKER_ROOTFS_SH: Scripts/OpenWrt/make_docker_rootfs.sh
+  #DOCKER_OUTPATH: out
+  DOCKER_OUTPATH: openwrt-docker/out
+  #DOCKER_NAME: "openwrt_R$(date +%Y.%m.%d)_aarch64-docker.tar.gz"
+  DOCKER_NAME: "openwrt_docker-aarch64_R$(date +%Y.%m.%d).tar.gz"
+  QEMU_SH: Scripts/OpenWrt/mk_qemu-aarch64_img.sh
+  S905D_N1_SH: Scripts/OpenWrt/mk_s905d_n1.sh
+  PRODUCT_NAME: ${{ inputs.device_soc }}
+  UPLOAD_COWTRANSFER: false
+  UPLOAD_WETRANSFER: false
+
+
+
+# Initialization ================================================================================
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.repository.owner.id }} == ${{ github.event.sender.id }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+        
+      - name: 检查服务器配置
+        run: |
+          echo "警告⚠"
+          echo "分配的服务器性能有限，若选择的插件过多，务必注意CPU性能！"
+          echo "云编译建议取消勾选Node.js及其相关插件！"
+          echo "已知CPU型号（降序）：8370C,8272CL,8171M,E5系列"
+          echo "--------------------------CPU信息--------------------------"
+          echo "CPU物理数量:$(cat /proc/cpuinfo| grep "physical id"| sort| uniq| wc -l)"
+          echo -e "CPU核心及版本信息：$(cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c) \n"
+          echo "--------------------------内存信息--------------------------"
+          echo "已安装内存详细信息："
+          sudo lshw -short -C memory | grep GiB
+          echo -e "\n"
+          echo "--------------------------硬盘信息--------------------------"
+          echo -e  "硬盘数量：$(ls /dev/sd* | grep -v [1-9] | wc -l) \n"
+          echo "硬盘详情："
+          df -Th
+
+      - name: Free Disk Space
+        uses: endersonmenezes/free-disk-space@main
+        with:
+          remove_android: true
+          remove_dotnet: true
+          remove_haskell: true
+          remove_tool_cache: true
+          remove_swap: true
+          remove_packages: "android* azure* clang* dotnet* firefox* ghc* golang* google* libclang* libgl1* lld* llvm* \
+            microsoft* mongodb* mono* mysql* nodejs* openjdk* php* postgresql* powershell* snap* temurin* yarn* zulu*"
+          remove_packages_one_command: true
+          remove_folders: "/etc/apt/sources.list.d* /etc/mono* /etc/mysql* /usr/include/linux/android* /usr/lib/llvm* /usr/lib/mono* \
+            /usr/local/lib/android* /usr/local/lib/node_modules* /usr/local/share/chromium* /usr/local/share/powershell* \
+            /usr/local/share/vcpkg/ports/azure* /usr/local/share/vcpkg/ports/google* /usr/local/share/vcpkg/ports/libpq/android* \
+            /usr/local/share/vcpkg/ports/llvm* /usr/local/share/vcpkg/ports/mysql* /usr/local/share/vcpkg/ports/snap* \
+            /usr/share/azure* /usr/share/dotnet* /usr/share/glade* /usr/share/miniconda* /usr/share/php* /usr/share/swift \
+            /var/lib/mysql* /var/log/azure*"
+          testing: false
+
+      - name: Create simulated physical disk
+        run: |
+          mnt_size=$(expr $(df -h /mnt | tail -1 | awk '{print $4}' | sed 's/[[:alpha:]]//g' | sed 's/\..*//') - 1)
+          root_size=$(expr $(df -h / | tail -1 | awk '{print $4}' | sed 's/[[:alpha:]]//g' | sed 's/\..*//') - 4)
+          sudo truncate -s "${mnt_size}"G /mnt/mnt.img
+          sudo truncate -s "${root_size}"G /root.img
+          sudo losetup /dev/loop6 /mnt/mnt.img
+          sudo losetup /dev/loop7 /root.img
+          sudo pvcreate /dev/loop6
+          sudo pvcreate /dev/loop7
+          sudo vgcreate github /dev/loop6 /dev/loop7
+          sudo lvcreate -n runner -l 100%FREE github
+          sudo mkfs.xfs /dev/github/runner
+          # 创建编译空间挂载点
+          sudo mkdir -p /workdir
+          sudo mount /dev/github/runner /workdir
+          sudo chown $USER:$GROUPS /workdir
+          sudo chown -R runner.runner /workdir
+          df -Th
+
+      - name: 最大化编译空间
+        uses: easimon/maximize-build-space@master
+        with:
+          root-reserve-mb: 4096
+          swap-size-mb: 1024
+          temp-reserve-mb: 200
+          build-mount-path: /workdir
+          overprovision-lvm: 'true'
+          remove-dotnet: 'true'
+          remove-android: 'true'
+          remove-haskell: 'true'
+          remove-codeql: 'true'
+          remove-docker-images: 'true'
+
+      - name: 再次检查服务器配置
+        run: |
+          echo "警告⚠"
+          echo "分配的服务器性能有限，若选择的插件过多，务必注意CPU性能！"
+          echo "云编译建议取消勾选Node.js及其相关插件！"
+          echo "已知CPU型号（降序）：8370C,8272CL,8171M,E5系列"
+          echo "--------------------------CPU信息--------------------------"
+          echo "CPU物理数量:$(cat /proc/cpuinfo| grep "physical id"| sort| uniq| wc -l)"
+          echo -e "CPU核心及版本信息：$(cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c) \n"
+          echo "--------------------------内存信息--------------------------"
+          echo "已安装内存详细信息："
+          sudo lshw -short -C memory | grep GiB
+          echo -e "\n"
+          echo "--------------------------硬盘信息--------------------------"
+          echo -e  "硬盘数量：$(ls /dev/sd* | grep -v [1-9] | wc -l) \n"
+          echo "硬盘详情："
+          df -Th
+
+      - name: Initialization environment
+        id: initial
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          docker rmi $(docker images -q) 2>/dev/null
+          [[ -n "${AGENT_TOOLSDIRECTORY}" ]] && sudo rm -rf "${AGENT_TOOLSDIRECTORY}"
+          sudo rm -rf /usr/share/dotnet /etc/apt/sources.list.d /usr/local/lib/android 2>/dev/null          
+          sudo docker image prune -a -f
+          sudo systemctl stop docker
+          sudo snap set system refresh.retain=2
+          sudo rm -rf /usr/share/dotnet /etc/apt/sources.list.d /usr/local/lib/android 2>/dev/null                  
+          sudo swapoff -a
+          sudo rm -f /swapfile /mnt/swapfile
+          sudo -E apt-get -y update
+          sudo -E apt-get -y purge azure-cli ghc* zulu* llvm* firefox google* dotnet* powershell openjdk* mongodb* moby* || true
+          sudo -E apt-get -y install $(curl -fsSL https://tinyurl.com/ubuntu2204-build-armbian)
+          sudo -E apt -y install $(curl -fsSL https://tinyurl.com/ubuntu2204-make-openwrt)
+          sudo -E apt -y install clang llvm lld
+          sudo -E systemctl daemon-reload
+          #sudo -E apt-get -y full-upgrade
+          sudo -E apt-get -y autoremove --purge
+          #sudo -E apt-get clean
+          sudo -E apt clean && sudo -E apt autoclean
+          sudo sed -i '/NVM_DIR/d;/skel/d' /root/{.bashrc,.profile}
+          sudo rm -rf ~/{.cargo,.dotnet,.rustup}
+          sudo timedatectl set-timezone "${TZ}"
+          echo "status=success" >> ${GITHUB_OUTPUT}
+
+      - name: 初始化编译环境
+        id: init
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          sudo apt-get update -y
+          sudo apt-get full-upgrade -y
+          sudo apt-get install -y ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential \
+          bzip2 ccache cmake cpio curl device-tree-compiler fastjar flex gawk gettext gcc-multilib g++-multilib \
+          git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libglib2.0-dev libgmp3-dev libltdl-dev \
+          libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libreadline-dev libssl-dev libtool lrzsz \
+          mkisofs msmtp nano ninja-build p7zip p7zip-full patch pkgconf python2.7 python3 python3-pyelftools \
+          libpython3-dev qemu-utils rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip \
+          vim wget xmlto xxd zlib1g-dev
+          sudo -E apt-get -qq autoremove --purge
+          sudo -E apt-get -qq clean
+          sudo timedatectl set-timezone "$TZ"
+          #sudo mkdir -p /workdir
+          #sudo chown $USER:$GROUPS /workdir
+          echo "硬盘详情："
+          df -Th
+          echo "status=success" >> ${GITHUB_OUTPUT}
+
+      - name: Create a mapped directory for kernel steps
+        id: mapped
+        if: ${{ github.event.inputs.kernel_steps }} == 'true' && ${{ steps.init.outputs.status }} == 'success' && !cancelled()
+        working-directory: /workdir
+        run: |
+          df -hT ${PWD}
+          mkdir -p /workdir/{kernel,output}
+          ln -sf /workdir/kernel /home/runner/work/_actions/ophub/amlogic-s9xxx-armbian/main/compile-kernel/kernel
+          ln -sf /workdir/output /home/runner/work/_actions/ophub/amlogic-s9xxx-armbian/main/compile-kernel/output
+          echo "status=success" >> ${GITHUB_OUTPUT}
+
+
+
+# Kernel_stable ================================================================================
+
+      - name: WeChat notification of the Kernel_stable Start
+        if: ${{ github.event.inputs.kernel_steps }} == 'true' && ${{ steps.mapped.outputs.status }} == 'success' && !cancelled()
+        run: |
+          MSG_WeChat="         
+          Kernel_stable开始编译……
+          
+          Kernel_stable：${{ inputs.kernel_version }}
+          Kernel_source：${{ inputs.kernel_source }}                    
+          "
+          curl https://sctapi.ftqq.com/${{ secrets.ServerChan_SendKey }}.send?title=Kernel_stable开始编译……&desp=${MSG_WeChat}
+
+      - name: Telegram notification of the Kernel_stable Start
+        if: ${{ github.event.inputs.kernel_steps }} == 'true' && ${{ steps.mapped.outputs.status }} == 'success' && !cancelled()
+        run: |
+          MSG_Telegram="
+          Kernel_stable开始编译……
+          
+          Kernel_stable：${{ inputs.kernel_version }}
+          Kernel_source：${{ inputs.kernel_source }} 
+          "
+          curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG_Telegram}"
+
+      - name: SSH connection to Kernel_stable Actions 【Ctrl+C to enter, Ctrl+D to exit】
+        uses: P3TERX/ssh2actions@main
+        if: (${{ github.event.inputs.kernel_steps }} == 'true' && ${{ github.event.inputs.ssh }} == 'true' && ${{ github.event.inputs.ssh }}  != 'false') || contains(github.event.action, 'ssh')
+        env:
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+
+      - name: Compile the Kernel_stable [ ${{ inputs.kernel_version }} ]
+        uses: ophub/amlogic-s9xxx-armbian@main
+        if: ${{ github.event.inputs.kernel_steps }} == 'true' && ${{ steps.mapped.outputs.status }} == 'success' && !cancelled()
+        with:
+          build_target: kernel
+          kernel_source: ${{ inputs.kernel_source }}
+          kernel_version: ${{ inputs.kernel_version }}
+          kernel_auto: ${{ inputs.kernel_auto }}
+          kernel_package: ${{ inputs.kernel_package }}
+          kernel_config: false
+          kernel_patch: false
+          auto_patch: false
+          kernel_toolchain: ${{ inputs.kernel_toolchain }}
+          compress_format: ${{ inputs.kernel_compress }}
+          kernel_sign: -stable   
+
+      - name: Upload Kernel_stable to Release
+        uses: ncipollo/release-action@main
+        if: ${{ github.event.inputs.kernel_steps }} == 'true' && ${{ env.PACKAGED_STATUS }} == 'success' && !cancelled()
+        with:
+          tag: Kernel_stable
+          artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/*
+          allowUpdates: true
+          removeArtifacts: false
+          replacesArtifacts: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body: |
+            - The kernel can be used to compile Armbian and OpenWrt.
+            - The kernel source code comes from: ${{ inputs.kernel_source }}.
+            - The kernel compilation toolchain: ${{ inputs.kernel_toolchain }}.
+            - This is a stable version kernel without specific config and patches. The kernel_beta source code and patches used are the same as kernel_dev, which means that additional third-party drivers and patches have been added on top of kernel_stable. The difference is that kernel_dev is compiled in an ARM64 (Armbian/Debian) system environment.
+            - 这是dring制作的源自ophub的未包含特定配置和补丁的kernel_stable版内核。kernel_beta使用的内核源码及补丁与kernel_dev完全相同，即在kernel_stable的基础上添加了更多的第三方驱动和补丁，beta与dev的区别是kernel_dev编译于ARM64（Armbian/Debian）系统环境。
+            - These kernels can be used in Armbian and OpenWrt and can be interchanged with the kernels in kernel_flippy, kernel_stable, and kernel_beta.
+            - 这些内核可以在Armbian和OpenWrt里使用。kernel_dring, kernel_flippy, kernel_stable, kernel_beta和kernel_dev的内核可以互换使用。
+
+      - name: WeChat notification of the Kernel_stable END
+        if: ${{ github.event.inputs.kernel_steps }} == 'true' && !cancelled()
+        run: |
+          MSG_WeChat="
+          Kernel_stable编译完成。
+          
+          Kernel_stable：${{ inputs.kernel_version }}
+          Kernel_source：${{ inputs.kernel_source }}                    
+          "
+          curl https://sctapi.ftqq.com/${{ secrets.ServerChan_SendKey }}.send?title=Kernel_stable编译完成。&desp=${MSG_WeChat}
+
+      - name: Telegram notification of the Kernel_stable END
+        if: ${{ github.event.inputs.kernel_steps }} == 'true' && !cancelled()
+        run: |
+          MSG_Telegram="
+          Kernel_stable编译完成。
+          
+          Kernel_stable：${{ inputs.kernel_version }}
+          Kernel_source：${{ inputs.kernel_source }}
+          "
+          curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG_Telegram}"
+
+
+
+# Kernel_dring ================================================================================
+
+      - name: WeChat notification of the Kernel_dring Start
+        if: ${{ github.event.inputs.kernel_steps }} == 'true' && ${{ steps.mapped.outputs.status }} == 'success' && !cancelled()
+        run: |
+          MSG_WeChat="         
+          Kernel_dring开始编译……
+          
+          Kernel_dring：${{ inputs.kernel_version }}
+          Kernel_source：${{ inputs.kernel_source }}                    
+          "
+          curl https://sctapi.ftqq.com/${{ secrets.ServerChan_SendKey }}.send?title=Kernel_dring开始编译……&desp=${MSG_WeChat}
+
+      - name: Telegram notification of the Kernel_dring Start
+        if: ${{ github.event.inputs.kernel_steps }} == 'true' && ${{ steps.mapped.outputs.status }} == 'success' && !cancelled()
+        run: |
+          MSG_Telegram="
+          Kernel_dring开始编译……
+          
+          Kernel_dring：${{ inputs.kernel_version }}
+          Kernel_source：${{ inputs.kernel_source }}  
+          "
+          curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG_Telegram}"
+
+      - name: SSH connection to Kernel_dring Actions 【Ctrl+C to enter, Ctrl+D to exit】
+        uses: P3TERX/ssh2actions@main
+        if: (${{ github.event.inputs.kernel_steps }} == 'true' && ${{ github.event.inputs.ssh }} == 'true' && ${{ github.event.inputs.ssh }}  != 'false') || contains(github.event.action, 'ssh')
+        env:
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+
+      - name: Compile the Kernel_dring [ ${{ inputs.kernel_version }} ]
+        uses: ophub/amlogic-s9xxx-armbian@main
+        if: ${{ github.event.inputs.kernel_steps }} == 'true' && ${{ steps.mapped.outputs.status }} == 'success' && !cancelled()
+        with:
+          build_target: kernel
+          kernel_source: ${{ inputs.kernel_source }}
+          kernel_version: ${{ inputs.kernel_version }}
+          kernel_auto: ${{ inputs.kernel_auto }}
+          kernel_package: ${{ inputs.kernel_package }}
+          kernel_config: ${{ inputs.kernel_config }}
+          kernel_patch: ${{ inputs.kernel_patch }}
+          auto_patch: ${{ inputs.kernel_autopatch }}
+          kernel_toolchain: ${{ inputs.kernel_toolchain }}
+          compress_format: ${{ inputs.kernel_compress }}
+          kernel_sign: ${{ inputs.kernel_sign }}    
+
+      - name: Upload Kernel_dring to Release
+        uses: ncipollo/release-action@main
+        if: ${{ github.event.inputs.kernel_steps }} == 'true' && ${{ env.PACKAGED_STATUS }} == 'success' && !cancelled()
+        with:
+          tag: Kernel_dring
+          artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/*
+          allowUpdates: true
+          removeArtifacts: false
+          replacesArtifacts: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body: |
+            - The kernel can be used to compile Armbian and OpenWrt.
+            - The kernel source code comes from: ${{ inputs.kernel_source }}.
+            - The kernel compilation toolchain: ${{ inputs.kernel_toolchain }}.
+            - This is a beta version kernel. The kernel source code and patches used are the same as kernel_dev, which means that additional third-party drivers and patches have been added on top of kernel_stable. The difference is that kernel_dev is compiled in an ARM64 (Armbian/Debian) system environment.
+            - 这是dring制作的源自ophub的kernel_beta版内核，使用的内核源码及补丁与kernel_dev完全相同，即在kernel_stable的基础上添加了更多的第三方驱动和补丁，beta与dev的区别是kernel_dev编译于ARM64（Armbian/Debian）系统环境。
+            - These kernels can be used in Armbian and OpenWrt and can be interchanged with the kernels in kernel_flippy, kernel_stable, and kernel_beta.
+            - 这些内核可以在Armbian和OpenWrt里使用。kernel_dring, kernel_flippy, kernel_stable, kernel_beta和kernel_dev的内核可以互换使用。
+
+      - name: WeChat notification of the Kernel_dring END
+        if: ${{ github.event.inputs.kernel_steps }} == 'true' && !cancelled()
+        run: |
+          MSG_WeChat="
+          Kernel_dring编译完成。
+          
+          Kernel_dring：${{ inputs.kernel_version }}
+          Kernel_source：${{ inputs.kernel_source }}                  
+          "
+          curl https://sctapi.ftqq.com/${{ secrets.ServerChan_SendKey }}.send?title=Kernel_dring编译完成。&desp=${MSG_WeChat}
+
+      - name: Telegram notification of the Kernel_dring END
+        if: ${{ github.event.inputs.kernel_steps }} == 'true' && !cancelled()
+        run: |
+          MSG_Telegram="
+          Kernel_dring编译完成。
+          
+          Kernel_dring：${{ inputs.kernel_version }}
+          Kernel_source：${{ inputs.kernel_source }} 
+          "
+          curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG_Telegram}"
+
+
+
+# Armbian ================================================================================
+
+      - name: WeChat notification of the Armbian Start
+        if: ${{ github.event.inputs.armbian_steps }} == 'true' && ${{ steps.init.outputs.status }} == 'success' && !cancelled()
+        run: |
+          MSG_WeChat="         
+          Armbian开始编译……
+          
+          Armbian硬件类型：${{ inputs.device_board }}
+          Armbian版本名称：${{ inputs.armbian_version }}
+          kernel repository：${{ inputs.kernel_repo }}
+          Kernel tag：${{ inputs.kernel_tags }}
+          Kernel version：${{ inputs.kernel_version }}                  
+          "
+          curl https://sctapi.ftqq.com/${{ secrets.ServerChan_SendKey }}.send?title=Armbian开始编译……&desp=${MSG_WeChat}
+
+      - name: Telegram notification of the Armbian Start
+        if: ${{ github.event.inputs.armbian_steps }} == 'true' && ${{ steps.init.outputs.status }} == 'success' && !cancelled()
+        run: |
+          MSG_Telegram="
+          Armbian开始编译……
+          
+          Armbian硬件类型：${{ inputs.device_board }}
+          Armbian版本名称：${{ inputs.armbian_version }}
+          kernel repository：${{ inputs.kernel_repo }}
+          Kernel tag：${{ inputs.kernel_tags }}
+          Kernel version：${{ inputs.kernel_version }}  
+          "
+          curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG_Telegram}"
+
+      - name: Armbian-下载源码 Download source code
+        id: source
+        if: ${{ github.event.inputs.armbian_steps }} == 'true' && ${{ steps.init.outputs.status }} == 'success' && !cancelled()
+        working-directory: /workdir
+        run: |
+          df -hT ${PWD}
+          git clone -q --single-branch --depth=1 --branch=main https://github.com/armbian/build.git armbian
+          ln -sf /workdir/armbian ${GITHUB_WORKSPACE}/armbian
+          #ln -sf /workdir/armbian /home/runner/work/UniversalOS/UniversalOS/armbian
+          ln -sf /workdir/armbian /home/runner/work/_actions/FoxDring/UniversalOS/main/armbian
+          # 下载扩展的安装homeasssistant脚本
+          wget -P ./armbian/extensions https://raw.githubusercontent.com/armbian/os/main/userpatches/extensions/docker-ce.sh
+          wget -P ./armbian/extensions https://raw.githubusercontent.com/armbian/os/main/userpatches/extensions/ha.sh
+          # 修改ha.sh脚本中的命令以停止internet host IP地址检测
+          sed -i "/sed -i \"\/update-grub\/d\"/a\sed -i \"s\/while ! ping\/while   ping\/\" homeassistant-supervised/DEBIAN/postinst" ./armbian/extensions/ha.sh
+          echo "status=success" >> ${GITHUB_OUTPUT}
+
+      - name: SSH connection to Armbian Actions 【Ctrl+C to enter, Ctrl+D to exit】
+        uses: P3TERX/ssh2actions@main
+        if: (${{ github.event.inputs.armbian_steps }} == 'true' && ${{ github.event.inputs.ssh }} == 'true' && ${{ github.event.inputs.ssh }}  != 'false') || contains(github.event.action, 'ssh')
+        env:
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+
+      - name: Armbian-编译通用包 Compile Armbian [ ${{ inputs.armbian_version }} ] rootfs file
+        id: build
+        if: ${{ github.event.inputs.armbian_steps }} == 'true' && ${{ steps.source.outputs.status }} == 'success' && !cancelled()
+        working-directory: /workdir
+        run: |
+          # Compile method and parameter description: https://docs.armbian.com/Developer-Guide_Build-Options
+          cd armbian/
+              ./compile.sh RELEASE=${{ inputs.armbian_version }} BOARD=odroidn2 BRANCH=current ENABLE_EXTENSIONS="ha" BUILD_MINIMAL=no \
+                           BUILD_ONLY=default HOST=armbian BUILD_DESKTOP=no EXPERT=yes KERNEL_CONFIGURE=no \
+                           COMPRESS_OUTPUTIMAGE="sha" SHARE_LOG=yes                 
+          echo "status=success" >> ${GITHUB_OUTPUT}
+
+      - name: Armbian-Organize files and clear space
+        id: clean
+        if: ${{ github.event.inputs.armbian_steps }} == 'true' && ${{ steps.build.outputs.status }} == 'success' && !cancelled()
+        run: |
+          # Organize and keep essential files, delete unnecessary files
+          chmod +x ${ARMBIAN_ROOTFS_SH}
+          ${ARMBIAN_ROOTFS_SH} -v ${{ inputs.armbian_version }}                            
+          
+          # Set output information
+          df -hT ${PWD}
+          echo "build_tag=Armbian_${{ inputs.armbian_version }}_dring_$(date +"%Y.%m.%d")" >> ${GITHUB_OUTPUT}                    
+          echo "status=success" >> ${GITHUB_OUTPUT}
+
+      - name: Armbian-Upload Armbian rootfs image to Release
+        uses: ncipollo/release-action@main
+        if: ${{ github.event.inputs.armbian_steps }} == 'true' && ${{ steps.clean.outputs.status }} == 'success' && !cancelled()
+        with:
+          tag: ${{ steps.clean.outputs.build_tag }}
+          artifacts: armbian/output/images/*
+          allowUpdates: true
+          removeArtifacts: false
+          replacesArtifacts: true 
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Armbian-Packit Armbian
+        uses: ophub/amlogic-s9xxx-armbian@main
+        if: ${{ github.event.inputs.armbian_steps }} == 'true' && ${{ steps.clean.outputs.status }} == 'success' && !cancelled()
+        with:
+          build_target: armbian
+          armbian_path: armbian/output/images/*.img.gz
+          armbian_board: ${{ inputs.device_board }}
+          armbian_kernel: ${{ inputs.kernel_version }}
+          auto_kernel: ${{ inputs.kernel_auto }}
+          kernel_repo: ${{ inputs.kernel_repo }}
+          kernel_usage: ${{ inputs.kernel_tags }}
+          armbian_fstype: ${{ inputs.armbian_fstype }}
+          #armbian_size: 512/2560  #对系统的镜像分区大小进行设置，只设置 ROOTFS 分区大小时可以只指定一个数值，例如： -s 2560。需要同时设置 BOOTFS 和 ROOTFS 分区大小时，使用 / 对两个数值进行连接，例如： -s 512/2560。默认值：512/2560
+          builder_name: ${{ inputs.builder_name }}
+
+      - name: Armbian-Upload Armbian image to Release
+        uses: ncipollo/release-action@main
+        if: ${{ github.event.inputs.armbian_steps }} == 'true' && ${{ env.PACKAGED_STATUS }} == 'success' && !cancelled()
+        with:
+          tag: ${{ steps.clean.outputs.build_tag }}
+          artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/*
+          allowUpdates: true
+          removeArtifacts: false
+          replacesArtifacts: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body: |
+            ### Armbian For Homeassistant Supervisor Image information
+            - Default username: root
+            - Default password: 1234
+            - Install command: armbian-install
+            - Update command: armbian-update
+            ### Armbian Image Verification
+            - sha256sum
+
+      - name: WeChat notification of the Armbian END
+        if: ${{ github.event.inputs.armbian_steps }} == 'true' && ${{ env.PACKAGED_STATUS }} == 'success' && !cancelled()
+        run: |
+          MSG_WeChat="
+          Armbian打包完成。
+          
+          Armbian硬件类型：${{ inputs.device_board }}
+          Armbian编译信息：${{ env.build_tag }}
+          Armbian版本名称：${{ inputs.armbian_version }}
+          kernel repository：${{ inputs.kernel_repo }}
+          Kernel tag：${{ inputs.kernel_tags }}
+          Kernel version：${{ inputs.kernel_version }}
+          "
+          curl https://sctapi.ftqq.com/${{ secrets.ServerChan_SendKey }}.send?title=Armbian打包完成。&desp=${MSG_WeChat}
+
+      - name: Telegram notification of the Armbian END
+        if: ${{ github.event.inputs.armbian_steps }} == 'true' && ${{ env.PACKAGED_STATUS }} == 'success' && !cancelled()
+        run: |
+          MSG_Telegram="
+          Armbian打包完成。
+          
+          Armbian硬件类型：${{ inputs.device_board }}
+          Armbian编译信息：${{ env.build_tag }}
+          Armbian版本名称：${{ inputs.armbian_version }}
+          kernel repository：${{ inputs.kernel_repo }}
+          Kernel tag：${{ inputs.kernel_tags }}
+          Kernel version：${{ inputs.kernel_version }}
+          "
+          curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG_Telegram}"
+
+
+
+# OpenWrt_rootfs ================================================================================
+
+      - name: WeChat notification of the OpenWrt Start
+        if: ${{ github.event.inputs.openwrt_steps }} == 'true' && ${{ steps.init.outputs.status }} == 'success' && !cancelled()
+        run: |
+          MSG_WeChat="         
+          OpenWrt开始编译……
+          
+          OpenWrt硬件类型：${{ env.PRODUCT_NAME }}_lxc_docker
+          OpenWrt源码信息：${{ inputs.source_branch }}
+          Kernel repository：${{ inputs.kernel_repo }}
+          Kernel tag：${{ inputs.kernel_tags }}
+          Kernel version：${{ inputs.kernel_version }}
+          OpenWrt打包脚本：${{ inputs.package_scripts }}                   
+          "
+          curl https://sctapi.ftqq.com/${{ secrets.ServerChan_SendKey }}.send?title=OpenWrt开始编译……&desp=${MSG_WeChat}
+
+      - name: Telegram notification of the OpenWrt Start
+        if: ${{ github.event.inputs.openwrt_steps }} == 'true' && ${{ steps.init.outputs.status }} == 'success' && !cancelled()
+        run: |
+          MSG_Telegram="
+          OpenWrt开始编译……
+          
+          OpenWrt硬件类型：${{ env.PRODUCT_NAME }}_lxc_docker
+          OpenWrt源码信息：${{ inputs.source_branch }}
+          Kernel repository：${{ inputs.kernel_repo }}
+          Kernel tag：${{ inputs.kernel_tags }}
+          Kernel version：${{ inputs.kernel_version }}
+          OpenWrt打包脚本：${{ inputs.package_scripts }} 
+          "
+          curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG_Telegram}"
+          
+      - name: OpenWrt-源码选择及克隆
+        id: codes
+        if: ${{ github.event.inputs.openwrt_steps }} == 'true' && ${{ steps.init.outputs.status }} == 'success' && !cancelled()
+        working-directory: /workdir
+        run: |
+          # Set up compilation source code
+          if [[ "${{ inputs.source_branch }}" == *"openwrt"* ]]; then
+              REPO_URL="https://github.com/openwrt/openwrt"
+              REPO_BRANCH="main"
+              TAGS_NAME="official"
+          elif [[ "${{ inputs.source_branch }}" == *"lede"* ]]; then
+              REPO_URL="https://github.com/coolsnowwolf/lede"
+              REPO_BRANCH="master"
+              TAGS_NAME="lede"
+          elif [[ "${{ inputs.source_branch }}" == *"immortalwrt"* ]]; then
+              REPO_URL="https://github.com/immortalwrt/immortalwrt"
+              REPO_BRANCH="master"
+              TAGS_NAME="immortalwrt"
+          else
+              echo "Unknown source code repository."
+              exit 1
+          fi
+                    
+          # Clone source code
+          echo "当前工作目录是：${PWD}"
+          df -hT $PWD
+          #git clone $REPO_URL -b $REPO_BRANCH openwrt
+          git clone -q --single-branch --depth=1 --branch=${REPO_BRANCH} ${REPO_URL} openwrt
+          ln -sf /workdir/openwrt ${GITHUB_WORKSPACE}/openwrt
+          #ln -sf /workdir/openwrt /home/runner/work/UniversalOS/UniversalOS/openwrt
+          ln -sf /workdir/openwrt /home/runner/work/_actions/FoxDring/UniversalOS/main/openwrt
+          
+          cd openwrt
+          useVersionInfo=$(git show -s --date=short --format="Author: %an<br/>date: %cd<br/>commit: %s<br/>commit hash: %H")
+          echo "useVersionInfo=$useVersionInfo" >> $GITHUB_ENV
+
+      - name: OpenWrt-加载自定义Feeds
+        if: ${{ github.event.inputs.openwrt_steps }} == 'true' && !cancelled()
+        run: |
+          [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
+          chmod +x $DIY_P1_SH
+          cd openwrt
+          sed -i '$a src-git istore https://github.com/linkease/istore;main' feeds.conf.default
+          $GITHUB_WORKSPACE/$DIY_P1_SH
+
+      - name: OpenWrt-更新Feeds
+        if: ${{ github.event.inputs.openwrt_steps }} == 'true' && !cancelled()
+        run: cd openwrt && ./scripts/feeds update -a
+
+      - name: OpenWrt-安装Feeds
+        if: ${{ github.event.inputs.openwrt_steps }} == 'true' && !cancelled()
+        run: cd openwrt && ./scripts/feeds install -a
+
+      - name: OpenWrt-加载自定义Packages
+        if: ${{ github.event.inputs.openwrt_steps }} == 'true' && !cancelled()
+        run: |
+          echo "Custom Packages Here."
+          chmod +x $DIY_PKG_SH
+          cd openwrt/package/
+          $GITHUB_WORKSPACE/$DIY_PKG_SH
+
+      - name: OpenWrt-加载自定义配置
+        if: ${{ github.event.inputs.openwrt_steps }} == 'true' && !cancelled()
+        run: |
+          [ -e files ] && mv files openwrt/files
+          [ -e $CONFIG_FILE ] && cp $CONFIG_FILE openwrt/.config
+          chmod +x $DIY_P2_SH
+          cd openwrt
+          $GITHUB_WORKSPACE/$DIY_P2_SH
+
+      - name: SSH connection to OpenWrt Actions 【Ctrl+C to enter, Ctrl+D to exit】
+        uses: P3TERX/ssh2actions@main
+        if: (${{ github.event.inputs.openwrt_steps }} == 'true' && ${{ github.event.inputs.ssh }} == 'true' && ${{ github.event.inputs.ssh }}  != 'false') || contains(github.event.action, 'ssh')
+        env:
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+
+      - name: OpenWrt-下载packages
+        id: package
+        if: ${{ github.event.inputs.openwrt_steps }} == 'true' && !cancelled()
+        run: |
+          cd openwrt
+          make defconfig
+          make download -j8
+          find dl -size -1024c -exec ls -l {} \;
+          find dl -size -1024c -exec rm -f {} \;
+          echo "硬盘详情："
+          df -Th
+
+      - name: OpenWrt-Compile OpenWrt armvirt file
+        id: compile
+        if: ${{ github.event.inputs.openwrt_steps }} == 'true' && !cancelled()
+        run: |
+          cd openwrt
+          echo "当前工作目录是：${PWD}"
+          echo -e "$(nproc) thread compile"
+          make -j$(nproc) || make -j1 || make -j1 V=s
+          echo "status=success" >> $GITHUB_OUTPUT
+          grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
+          [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
+          echo "FILE_TIME=_$(date +"%Y.%m.%d.%H%M")" >> $GITHUB_ENV
+          
+          # Set output information
+          echo "build_tag=OpenWrt_${TAGS_NAME}_dring_$(date +"%Y.%m.%d")" >> ${GITHUB_OUTPUT}
+          echo -e "REPO_URL: [ ${REPO_URL} ]\nREPO_BRANCH: [ ${REPO_BRANCH} ]\nTAGS_NAME: [ ${TAGS_NAME} ]"
+          df -hT ${PWD}
+          echo "REPO_URL=${REPO_URL}" >> ${GITHUB_OUTPUT}
+          echo "TAGS_NAME=${TAGS_NAME}" >> ${GITHUB_OUTPUT}
+          df -hT ${PWD}          
+          echo "status=success" >> ${GITHUB_OUTPUT}
+
+      - name: OpenWrt-整理磁盘空间
+        id: arrange
+        if: ${{ github.event.inputs.openwrt_steps }} == 'true' && !cancelled()
+        run: |
+          echo "清理之前："
+          df -hT
+          
+          # 定义openwrt-armvirt路径
+          #armvirt_tarfile_path="openwrt/bin/targets/armvirt/64"
+          armvirt_tarfile_path="openwrt-armvirt"
+          #cd /workdir
+          [[ -d "${armvirt_tarfile_path}" ]] || mkdir -p ${armvirt_tarfile_path}
+          #ln -sf /workdir/openwrt ${GITHUB_WORKSPACE}/openwrt
+          #ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+          ln -sf /workdir ${GITHUB_WORKSPACE}
+          ln -sf /workdir/openwrt-armvirt ${GITHUB_WORKSPACE}/openwrt-armvirt
+          #ln -sf /workdir/openwrt-armvirt /home/runner/work/UniversalOS/UniversalOS/openwrt-armvirt
+          ln -sf /workdir/openwrt-armvirt /home/runner/work/_actions/FoxDring/UniversalOS/main/openwrt-armvirt     
+          
+          #mkdir openwrt-armvirt
+          mkdir /workdir/upload
+          cp openwrt/bin/targets/*/*/*.tar.gz /workdir/upload/          
+          cp openwrt/.config /workdir/upload/config 
+          mv openwrt/bin/targets/*/*/*.tar.gz openwrt-armvirt/                    
+          
+          echo -e "\n"
+          echo "列出空间占用前10的目录或文件："
+          sudo du -h --max-depth=1 /workdir/openwrt |sort -nr | head -10
+          
+          #rm -rf $(ls . | grep -v "^upload$" | xargs) 2>/dev/null
+          rm -rf /workdir/openwrt/ && sync
+          echo -e "\n"
+          echo "清理之后："
+          df -hT
+          echo -e "\n"
+          echo "/workdir路径文件"
+          ls -al
+          
+          # Generate sha256sum file
+          #cd /workdir/upload/
+          #for file in *; do [[ ! -d "${file}" ]] && sha256sum "${file}" >"${file}.sha"; done
+          
+          echo "显示运行目录及文件"
+          df -hT ${PWD}
+          pwd
+          ls -al
+          echo -e "\n"
+          echo "列出空间占用前10的目录或文件："
+          sudo du -h --max-depth=1 /workdir |sort -nr | head -10                    
+          echo "status=success" >> ${GITHUB_OUTPUT}
+
+
+
+# OpenWrt_docker ================================================================================
+
+      - name: WeChat notification of the OpenWrt_docker Start
+        if: ${{ github.event.inputs.openwrt_steps }} == 'true' && ${{ steps.arrange.outputs.status }} == 'success' && !cancelled()
+        run: |
+          MSG_WeChat="         
+          OpenWrt_docker开始打包……
+          
+          OpenWrt源码信息：${{ inputs.source_branch }}
+          dockerhub：${{ inputs.docker_hub }}                  
+          "
+          curl https://sctapi.ftqq.com/${{ secrets.ServerChan_SendKey }}.send?title=OpenWrt_docker开始打包……&desp=${MSG_WeChat}
+
+      - name: Telegram notification of the OpenWrt_docker Start
+        if: ${{ github.event.inputs.openwrt_steps }} == 'true' && ${{ steps.arrange.outputs.status }} == 'success' && !cancelled()
+        run: |
+          MSG_Telegram="
+          OpenWrt_docker开始打包……
+          
+          OpenWrt源码信息：${{ inputs.source_branch }}
+          dockerhub：${{ inputs.docker_hub }} 
+          "
+          curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG_Telegram}"
+
+      - name: OpenWrt-Build the Docker rootfs file
+        id: docker-rootfs
+        if: ${{ github.event.inputs.openwrt_steps }} == 'true' && ${{ steps.arrange.outputs.status }} == 'success' && !cancelled()
+        run: |
+          cd /workdir          
+          mkdir /workdir/openwrt-docker
+          sudo cp openwrt-armvirt/*.tar.gz openwrt-docker/
+          sudo cp Scripts/${DOCKER_ROOTFS_SH} openwrt-docker/
+          cd /workdir/openwrt-docker
+          echo "当前工作目录是：${PWD}"
+          chmod +x ${DOCKER_ROOTFS_SH}
+          ${DOCKER_ROOTFS_SH}
+          rm -rf /workdir/openwrt-docker/*.tar.gz
+          echo "DATE=$(date "+%Y.%m.%d")" >> $GITHUB_ENV          
+          echo "status=success" >> ${GITHUB_OUTPUT}
+
+      - name: OpenWrt-Set up Docker
+        id: setup_docker
+        if: ${{ github.event.inputs.openwrt_steps }} == 'true' && ${{ steps.docker-rootfs.outputs.status }} == 'success' && !cancelled()
+        uses: docker/setup-docker-action@master
+        with:
+          daemon-config: |
+            {
+              "debug": true,
+              "features": {
+                "containerd-snapshotter": true
+              }
+            }
+
+      - name: OpenWrt-Set up QEMU
+        id: qemu
+        if: ${{ github.event.inputs.openwrt_steps }} == 'true' && ${{ steps.docker-rootfs.outputs.status }} == 'success' && !cancelled()
+        uses: docker/setup-qemu-action@master
+        # https://github.com/docker/setup-qemu-action
+
+      - name: OpenWrt-Set up Docker Buildx
+        id: buildx
+        if: ${{ github.event.inputs.openwrt_steps }} == 'true' && !cancelled()
+        uses: docker/setup-buildx-action@master
+        # https://github.com/docker/setup-buildx-action
+
+      - name: OpenWrt-Login to Docker Hub
+        id: login
+        if: ${{ github.event.inputs.openwrt_steps }} == 'true' && !cancelled()
+        uses: docker/login-action@master
+        with:
+          #username: ${{ secrets.DOCKERHUB_USERNAME }}
+          #password: ${{ secrets.DOCKERHUB_PASSWORD }}          
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+        # https://github.com/docker/login-action
+
+      - name: OpenWrt-Push to Docker Hub
+        id: docker
+        if: ${{ github.event.inputs.openwrt_steps }} == 'true' && !cancelled()
+        uses: docker/build-push-action@master
+        with:
+          context: ${{ env.DOCKER_OUTPATH }}
+          file: ${{ env.DOCKER_OUTPATH }}/Dockerfile
+          platforms: linux/arm64
+          tags: "${{ inputs.docker_hub }}:R${{ env.DATE }}"          
+          output: type=docker,tar=true,compression=gzip,force-compression=true,name=${{ env.DOCKER_NAME }},dest=/workdir/upload/,store=true  #compression选项: uncompressed,gzip,estargz,zstd
+          push: true
+        # https://github.com/docker/build-push-action
+        # https://docs.docker.com/reference/cli/docker/buildx/build/#output
+        # https://docs.docker.com/build/exporters/oci-docker/
+        # https://docs.docker.com/build/exporters/image-registry/
+
+      - name: OpenWrt-Upload OpenWrt armvirt and docker files to GitHub Release
+        #if: ${{ github.event.inputs.openwrt_steps }} == 'true' && ${{ steps.docker.outputs.status }} == 'success' && !cancelled()
+        if: ${{ github.event.inputs.openwrt_steps }} == 'true' && !cancelled()
+        uses: ncipollo/release-action@main       
+        with:
+          tag: ${{ steps.compile.outputs.build_tag }}
+          artifacts: /workdir/upload/*
+          allowUpdates: true
+          removeArtifacts: false
+          replacesArtifacts: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: WeChat notification of the OpenWrt_docker END
+        if: ${{ github.event.inputs.openwrt_steps }} == 'true' && !cancelled()
+        run: |
+          MSG_WeChat="         
+          OpenWrt_docker打包完成。
+          
+          OpenWrt源码信息：${{ inputs.source_branch }}
+          dockerhub：${{ inputs.docker_hub }}                  
+          "
+          curl https://sctapi.ftqq.com/${{ secrets.ServerChan_SendKey }}.send?title=OpenWrt_docker打包完成。&desp=${MSG_WeChat}
+
+      - name: Telegram notification of the OpenWrt_docker END
+        if: ${{ github.event.inputs.openwrt_steps }} == 'true' && !cancelled()
+        run: |
+          MSG_Telegram="
+          OpenWrt_docker打包完成。
+          
+          OpenWrt源码信息：${{ inputs.source_branch }}
+          dockerhub：${{ inputs.docker_hub }} 
+          "
+          curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG_Telegram}"
+
+
+
+# OpenWrt_packit ================================================================================
+
+      - name: OpenWrt-Clone packit source code
+        id: packit
+        if: ${{ github.event.inputs.openwrt_steps }} == 'true' && ${{ steps.arrange.outputs.status }} == 'success' && !cancelled()
+        working-directory: /workdir       
+        run: |
+          echo "当前工作目录是：${PWD}"
+          SCRIPT_REPO_URL="https://github.com/unifreq/openwrt_packit"
+          SCRIPT_REPO_BRANCH="master"
+          SELECT_PACKITPATH="openwrt_packit"
+          git clone -q --single-branch --depth=1 --branch=${SCRIPT_REPO_BRANCH} ${SCRIPT_REPO_URL} ${SELECT_PACKITPATH}
+          ln -sf /workdir/${SELECT_PACKITPATH} /opt/${SELECT_PACKITPATH}
+          
+          echo "赋予自修改脚本执行权限"
+          chmod +x make.env
+          chmod +x public_funcs
+          chmod +x sel
+          chmod +x $DIY_P3_SH
+          chmod +x qemu-aarch64.env
+          chmod +x ${QEMU_SH}
+          chmod +x ${S905D_N1_SH}
+          
+          cd openwrt_packit
+          useVersionInfo_packit=$(git show -s --date=short --format="Author: %an<br/>date: %cd<br/>commit: %s<br/>commit hash: %H")
+          echo "useVersionInfo_packit=$useVersionInfo_packit" >> $GITHUB_ENV          
+          
+          echo "硬盘详情："
+          df -Th
+          pwd
+          ls -al
+          echo "status=success" >> ${GITHUB_OUTPUT}
+          
+      - name: OpenWrt-Package OpenWrt Firmware
+        uses: ${package_scripts}
+        if: ${{ github.event.inputs.openwrt_steps }} == 'true' && ${{ steps.packit.outputs.status }} == 'success' && !cancelled()
+        env:
+          SELECT_PACKITPATH: openwrt_packit
+          SELECT_OUTPUTPATH: output
+          #OPENWRT_ARMVIRT: openwrt/bin/targets/*/*/*rootfs.tar.gz
+          OPENWRT_ARMVIRT: openwrt-armvirt/*rootfs.tar.gz       
+          KERNEL_REPO_URL: ${{ inputs.kernel_repo }}
+          KERNEL_TAGS: ${{ inputs.kernel_tags }}
+          KERNEL_VERSION_NAME: ${{ inputs.kernel_version }}
+          KERNEL_AUTO_LATEST: ${{ inputs.kernel_auto }}
+          PACKAGE_SOC: ${{ inputs.device_soc }}
+          OPENWRT_BOARD: ${{ inputs.device_board }}            
+          CUSTOMIZE_RK3399: ${{ inputs.customize_rk3399 }}
+          SCRIPT_DIY_PATH: ${{ inputs.script_diy_path }}          
+          #SW_FLOWOFFLOAD: 1
+          #HW_FLOWOFFLOAD: 0
+          #SFE_FLOW: 0          
+          OPENWRT_VER: R$(date +%Y.%m.%d)  #auto
+          DISTRIB_REVISION: R$(date +%Y.%m.%d)
+          DISTRIB_DESCRIPTION: OpenWrt
+          WHOAMI: ${{ inputs.builder_name }}     
+          GZIP_IMGS: ${{ inputs.gzip_imgs }}
+
+      # - name: OpenWrt-打包固件
+        # uses: unifreq/openwrt_packit@master
+        # if: ${{ github.event.inputs.openwrt_steps }} == 'true' && !cancelled()
+        # env:
+          # WHOAMI: dring
+          # OPENWRT_ARMVIRT: openwrt-armvirt/*.tar.gz
+          # PACKAGE_SOC: s905d_qemu
+          # KERNEL_AUTO_LATEST: true
+         # # KERNEL_REPO_URL: https://github.com/laiyujun/Actions_OpenWrt-Amlogic/tree/main/kernel
+         # # KERNEL_REPO_URL: ${{ inputs.kernel_repo }}
+          # KERNEL_VERSION_NAME: ${{ inputs.kernel_version }}
+
+      - name: OpenWrt-整理文件到上传目录
+        id: move
+        if: ${{ github.event.inputs.openwrt_steps }} == 'true' && !cancelled()
+        run: |
+          # 修改用户组权限
+          #sudo chown $USER:$GROUPS /opt/openwrt_packit/output
+          # 修改文件夹权限
+          #sudo chmod -R 777 /opt/openwrt_packit/output
+          # 以管理员身份操作文件
+          sudo mv /opt/openwrt_packit/output/* /workdir/upload/
+          #sudo mv /workdir/openwrt_packit/output/* /workdir/upload/
+          #sudo mv /workdir/openwrt-armvirt/* /workdir/upload/
+          # Generate sha256sum file
+          #cd /workdir/upload/
+          #for file in *; do [[ ! -d "${file}" ]] && sha256sum "${file}" >"${file}.sha"; done 
+          echo "TIME=$(date "+%Y.%m.%d %H:%M:%S")" >> $GITHUB_ENV
+          echo "DATE=$(date "+%Y.%m.%d")" >> $GITHUB_ENV
+          echo "status=success" >> ${GITHUB_OUTPUT}
+
+      # - name: OpenWrt-Upload OpenWrt Firmware to Release
+        # uses: ncipollo/release-action@main
+        # if: ${{ github.event.inputs.openwrt_steps }} == 'true' && ${{ env.PACKAGED_STATUS }} == 'success' && !cancelled()
+        # with:
+          # tag: ${{ steps.download.outputs.build_tag }}
+          # artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/*
+          # allowUpdates: true
+          # removeArtifacts: false
+          # replacesArtifacts: true
+          # token: ${{ secrets.GITHUB_TOKEN }}
+          # body: |
+            # ### OpenWrt Image information
+            # - Default IP: 192.168.1.1
+            # - Default username: root
+            # - Default password: password
+            # - Default WIFI name: OpenWrt
+            # - Default WIFI password: none
+            # ### Install to EMMC
+            # - Login to OpenWrt → System → Amlogic Service → Install OpenWrt
+            # ### OpenWrt source code
+            # #- [lede](https://github.com/coolsnowwolf/lede)
+            # - [${{ steps.compile.outputs.TAGS_NAME }}](${{ steps.compile.outputs.REPO_URL }})
+            # ### OpenWrt Image Verification
+            # - sha256sum          
+
+      - name: OpenWrt-发布固件到Release
+        uses: ncipollo/release-action@main
+        if: ${{ github.event.inputs.openwrt_steps }} == 'true' && ${{ steps.move.outputs.status }} == 'success' && !cancelled()
+        with:
+          tag: ${{ steps.compile.outputs.build_tag }}
+          artifacts: /workdir/upload/*
+          allowUpdates: true
+          removeArtifacts: false
+          replacesArtifacts: true          
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body: |
+            ### **OpenWrt固件-（含iStore）**
+            * **固件信息：**
+            默认IP: `192.168.1.1`
+            默认用户名: `root`
+            默认密码: `password`
+            * **使用方法：**
+            1. 安装固件：写入U盘直接使用；U盘启动后可输入命令 `openwrt-install-amlogic` 按照英文提示写入到emmc
+            2. 更新固件：将固件放在 `/mnt/mmcblk2p4/` 目录下，输入命令 `openwrt-update-amlogic` 可直接更新
+            3. 登录Luci界面后，可直接使用`晶晨宝盒`插件进行写入emmc或者更新操作（使用前先按需求填写好插件设置），免去手动输入命令！
+            * **更新说明：**
+            目前已集成大部分常用插件（含iStore插件）
+            * **提示：**
+            建议自行添加iStore的软件源，并在软件源配置里禁用`# option check_signature`，之后刷新一下软件列表
+            自定义软件源：
+            `src/gz is_nas_luci https://istore.linkease.com/repo/all/nas_luci`
+            `src/gz is_store https://istore.linkease.com/repo/all/store`
+            固件升级后不会保留自行安装的插件，注意使用iStore插件备份！
+            固件更新频率：`每周一次`
+
+      - name: OpenWrt-Upload firmware to cowtransfer
+        id: cowtransfer
+        if: ${{ github.event.inputs.openwrt_steps }} == 'true' && ${{ steps.move.outputs.status }} == 'success' && env.UPLOAD_COWTRANSFER == 'true' && !cancelled()
+        run: |
+          echo "当前工作目录是：${PWD}"
+          curl -fsSL git.io/file-transfer | sh
+          ./transfer cow --block 2621440 -s -p 64 --no-progress ${FIRMWARE} 2>&1 | tee cowtransfer.log
+          echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
+          echo "::set-output name=url::$(cat cowtransfer.log | grep https | cut -f3 -d" ")"
+          echo "🔗 [Cowtransfer](${{ steps.cowtransfer.outputs.url }})"
+
+      - name: OpenWrt-Upload firmware to WeTransfer
+        id: wetransfer
+        if: ${{ github.event.inputs.openwrt_steps }} == 'true' && ${{ steps.move.outputs.status }} == 'success' && env.UPLOAD_WETRANSFER == 'true' && !cancelled()
+        run: |
+          echo "当前工作目录是：${PWD}"
+          curl -fsSL git.io/file-transfer | sh
+          ./transfer wet -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee wetransfer.log
+          echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
+          echo "::set-output name=url::$(cat wetransfer.log | grep https | cut -f3 -d" ")"
+          echo "🔗 [WeTransfer](${{ steps.wetransfer.outputs.url }})"
+
+      - name: WeChat notification of the OpenWrt END
+        if: ${{ github.event.inputs.openwrt_steps }} == 'true' && ${{ steps.move.outputs.status }} == 'success' && !cancelled()
+        run: |
+          MSG_WeChat="
+          OpenWrt打包完成。
+          
+          OpenWrt硬件类型：${{ env.PRODUCT_NAME }}_lxc_docker
+          OpenWrt编译信息：${{ env.build_tag }}
+          OpenWrt源码信息：${{ env.useVersionInfo }}
+          Kernel repository：${{ inputs.kernel_repo }}
+          Kernel tag：${{ inputs.kernel_tags }}
+          Kernel version：${{ inputs.kernel_version }}                  
+          OpenWrt打包脚本：${{ inputs.package_scripts }}
+          OpenWrt打包信息：${{ env.useVersionInfo_packit }}
+          OpenWrt打包时间：${{ env.TIME }}         
+          "
+          curl https://sctapi.ftqq.com/${{ secrets.ServerChan_SendKey }}.send?title=OpenWrt打包完成。&desp=${MSG_WeChat}
+
+      - name: Telegram notification of the OpenWrt END
+        if: ${{ github.event.inputs.openwrt_steps }} == 'true' && ${{ steps.move.outputs.status }} == 'success' && !cancelled()
+        run: |
+          MSG_Telegram="
+          OpenWrt打包完成。
+          
+          OpenWrt硬件类型：${{ env.PRODUCT_NAME }}_lxc_docker
+          OpenWrt编译信息：${{ env.build_tag }}
+          OpenWrt源码信息：${{ env.useVersionInfo }}
+          Kernel repository：${{ inputs.kernel_repo }}
+          Kernel tag：${{ inputs.kernel_tags }}
+          Kernel version：${{ inputs.kernel_version }}                  
+          OpenWrt打包脚本：${{ inputs.package_scripts }}
+          OpenWrt打包信息：${{ env.useVersionInfo_packit }}
+          OpenWrt打包时间：${{ env.TIME }}
+          "
+          curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG_Telegram}"
+
+
+
+# Clean ================================================================================
+
+      - name: 删除多余releases
+        uses: dev-drprasad/delete-older-releases@master
+        with:
+          repo: ${{ github.repository }}
+          keep_latest: 8
+          #keep_latest: ${{ github.event.inputs.rele }}
+          #delete_tag_pattern:
+          delete_tags: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 清理Actions空间
+        uses: Mattraks/delete-workflow-runs@main
+        with:
+            token: ${{ secrets.GITHUB_TOKEN }}
+            repository: ${{ github.repository }}
+            keep_minimum_runs: 8
+            retain_days: 8
+            #retain_days: ${{ github.event.inputs.action_days }}
+
+
+
+# END ================================================================================
+
+
+

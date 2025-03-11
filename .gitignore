@@ -1,3 +1,62 @@
+# 源自flippy(https://github.com/unifreq/openwrt_packit/blob/master/.gitignore）
+# 源自ophub (https://github.com/ophub/amlogic-s9xxx-armbian/blob/main/.gitignore)
+# 源自breakingbadboy (https://github.com/breakingbadboy/OpenWrt/blob/main/.gitignore)
+
 !.gitignore
 .DS_Store
 npm-debug.log*
+
+# 【Armbian】
+/build
+/tmp_dir
+/build-armbian/kernel
+/build-armbian/u-boot
+/compile-kernel/kernel
+/compile-kernel/output
+/compile-kernel/tools/armbian
+
+# 【OpenWrt-flippy】
+/src1
+/src2
+/sp1
+/sp2
+/dp1
+/dp2
+/tmp
+/output
+flowoffload
+sfe*
+openwrt-armvirt-64-default-rootfs.tar.gz
+openwrt-armvirt-64-generic-rootfs.tar.gz
+/whoami
+
+# 【OpenWrt-ophub】
+/make-openwrt/kernel
+/make-openwrt/u-boot
+/openwrt
+/openwrt-armvirt
+/out
+/tmp
+
+# 【OpenWrt-breakingbadboy】
+# Build and Release Folders
+bin-debug/
+bin-release/
+[Oo]bj/
+[Bb]in/
+
+# Other files and folders
+.settings/
+
+# Executables
+*.swf
+*.air
+*.ipa
+*.apk
+.DS_Store
+
+# Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
+# should NOT be excluded as they contain compiler settings and other important
+# information for Eclipse / Flash Builder.
+
+

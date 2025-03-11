@@ -1,3 +1,7 @@
+# 源自flippy (https://github.com/unifreq/openwrt_packit/blob/master/action.yml)
+# 源自ophub (https://github.com/ophub/amlogic-s9xxx-openwrt/blob/main/action.yml)
+# 源自ophub (https://github.com/ophub/flippy-openwrt-actions/blob/main/action.yml)
+
 name: "Make OpenWrt using flippy's script"
 author: "https://github.com/ophub/flippy-openwrt-actions"
 description: "Support Amlogic, Rockchip and Allwinner boxes."
@@ -5,12 +9,12 @@ inputs:
   mode:
     description: "Select script."
     required: false
-    default: "flippy"
+    default: "dring" #flippy
 
 runs:
   using: "composite"
   steps:
-    - run: chmod +x ${GITHUB_ACTION_PATH}/openwrt_${{ inputs.mode }}.sh && ${GITHUB_ACTION_PATH}/openwrt_${{ inputs.mode }}.sh
+    - run: chmod +x ${GITHUB_ACTION_PATH}/Scripts/OpenWrt/openwrt_${{ inputs.mode }}.sh && ${GITHUB_ACTION_PATH}/Scripts/OpenWrt/openwrt_${{ inputs.mode }}.sh
       shell: bash
 
 branding:
