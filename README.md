@@ -10,9 +10,7 @@
 
 <br />
 
-<p align="center">
-  <a href="https://github.com/bigbugcc/OpenWrts">
-    <img src="./assets/images/action1.jpg" alt="Logo" width="500" />
+
   </a>
   <h3 align="center">UniversalOS 融合式系统——天下大同</h3>
   <p align="center">
@@ -64,8 +62,8 @@
 |  [OpenWrt] |             OpenWrt-ophub                    |  ophub |[🍕](https://github.com/ophub/amlogic-s9xxx-openwrt) |  [✔](https://github.com/ophub/amlogic-s9xxx-openwrt/tags) |
 |  [OpenWrt] |             OpenWrt-ophub打包的flippy固件                    |  ophub |[🍕](https://github.com/ophub/flippy-openwrt-actions) |  [✔](https://github.com/ophub/flippy-openwrt-actions/tags) |
 |  [OpenWrt] |             OpenWrt-laiyujun                    |  laiyujun |[🍕](https://github.com/laiyujun/Actions_OpenWrt-Amlogic) |  [✔](https://github.com/laiyujun/Actions_OpenWrt-Amlogic/tags) |
-|  [OpenWrt] |             OpenWrt-dring                    |  Dring |[🍕](https://github.com/FoxDring/UniversalOS) |  [✔](https://github.com/FoxDring/UniversalOS/tags) |
-|  [OpenWrt] |             OpenWrt-docker-dring                    |  Dring |[🍕](https://hub.docker.com/repository/docker/foxdring/openwrt-aarch64/general) |  [✔](https://hub.docker.com/repository/docker/foxdring/openwrt-aarch64/tags) |
+|  [OpenWrt] |             OpenWrt-dring                    |  dring |[🍕](https://github.com/FoxDring/UniversalOS) |  [✔](https://github.com/FoxDring/UniversalOS/tags) |
+|  [OpenWrt] |             OpenWrt-docker-dring                    |  dring |[🍕](https://hub.docker.com/repository/docker/foxdring/openwrt-aarch64/general) |  [✔](https://hub.docker.com/repository/docker/foxdring/openwrt-aarch64/tags) |
 
 
 
@@ -137,5 +135,5 @@
 
 
 
-# NestingDNS(https://github.com/217heidai/NestingDNS)
-DNS 三大神器 [AdGuardHome](https://github.com/AdguardTeam/AdGuardHome)、[MosDNS](https://github.com/IrineSistiana/mosdns)、[SmartDNS](https://github.com/pymumu/smartdns)全都要,套娃使用三大神器，试图找到一套最佳实践.
+# [NestingDNS](https://github.com/217heidai/NestingDNS)
+DNS三大神器 [AdGuardHome](https://github.com/AdguardTeam/AdGuardHome)、[MosDNS](https://github.com/IrineSistiana/mosdns)、[SmartDNS](https://github.com/pymumu/smartdns)全都要,套娃使用三大神器，试图找到一套最佳实践.
