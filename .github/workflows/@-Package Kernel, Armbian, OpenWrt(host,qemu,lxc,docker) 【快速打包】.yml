@@ -164,402 +164,402 @@ on:
           - Config/Kernel/kernel-patch/beta
           - false
           - others
-      kernel_autopatch:
-        description: "Set whether to use kernel patches"
-        required: false
-        default: "true"
-        type: choice
-        options:
-          - true
-          - false
-          - others
-      kernel_toolchain:
-        description: "Select the kernel compilation toolchain"
-        required: false
-        default: "gcc"
-        type: choice
-        options:
-          - clang
-          - gcc
-          - gcc-11.3
-          - gcc-12.2
-          - gcc-12.3
-          - gcc-13.2
-          - gcc-13.3
-          - others
-      kernel_compress:
-        description: "Set the kernel initrd compression format"
-        required: false
-        default: "xz"
-        type: choice
-        options:
-          - xz
-          - gzip
-          - zstd
-          - lzma
-          - others
-      kernel_sign:
-        description: "Set the kernel custom signature"
-        required: false
-        default: "-dring"
-        type: choice
-        options:
-          - -dring
-          - -ophub
-          - -dev
-          - -beta
-          - -stable
-          - -happy-new-year
-          - -dragon-boat-festival
-          - -mid-autumn-festival
-          - -happy-national-day
-          - -merry-christmas
-          - -spring-plowing
-          - -summer-growing
-          - -autumn-harvesting
-          - -winter-storing
-          - -others
-
-      kernel_repo:  #用于编译系统所需要的的kernel选择
-        description: "Set the kernel repository"
-        required: false
-        default: "ophub/kernel"
-        type: choice
-        options:
-          - FoxDring/UniversalOS
-          - ophub/kernel
-          - breakingbadboy/OpenWrt
-          - breakings/OpenWrt
-          - others
-      kernel_tags:  #用于编译系统所需要的的kernel选择
-        description: "Set the kernel repository tags"
-        required: false
-        default: "dev"
-        type: choice
-        options:
-          - dring
-          - ophub
-          - flippy
-          - dev
-          - beta
-          - stable
-          - h6
-          - rk3588          
-          - rk35xx
-          - others
-
-      device_soc:
-        description: "Select device soc."
-        required: false
-        default: "s905d_qemu"
-        type: choice
-        options:
-          - all
-          - s905d_qemu
-          - s922x_s905x3_s905x2_s912_s905d_s905
-          - ak88
-          - beikeyun
-          - cm3
-          - e20c
-          - e25
-          - e52c
-          - e54c
-          - ht2
-          - h28k
-          - h66k
-          - h68k
-          - h69k
-          - h69k-max
-          - h88k
-          - h88k-v3
-          - l1pro
-          - photonicat
-          - qemu
-          - r66s
-          - r68s
-          - jp-tvbox
-          - watermelon-pi
-          - rock5b
-          - rock5c
-          - rk3399
-          - s905
-          - s905d
-          - s905x2
-          - s905x3
-          - s912
-          - s922x
-          - s922x-n2
-          - vplus
-          - zcube1-max
-          - others
-          - diy
-      device_board:
-        description: "Select device board"
-        required: false
-        default: "s905d"
-        type: choice
-        options:
-          - all
-          - s905w_s905x_s905mb_s905l3a_s905l3b_s905x2_s905x3_s912_s922x_s922x-ct2000_s922x-reva
-          - s905w_s905x_s905x-b860h_s905x-t95_s905x2_s905x3_s905x3-x88-pro-x3_s912_s912-m8s-pro_s912-phicomm-t1_s912-t95z-plus
-          - s905x3-x88-pro-x3_s912-m8s-pro_s905x-t95_s912-t95z-plus_s905l3-unt400g1_s905lb-r3300l
-          - s912-x92_s922x_s922x-ct2000_s922x-reva_seewo-sv21_smart-am40_station-m1_sw799_swan1-w28
-          - tanix-tx6_tb-ls3399_tn3399_tpm312_tqc-a01_tvi3315a_vplus_wxy-oec_xiaobao_yskj_zcube1-max_zk-r39a_zysj
-          - a311d
-          - beikeyun
-          - chainedbox
-          - crrc
-          - dg3399
-          - dg-tn3568
-          - dlfr100
-          - e20c
-          - e25
-          - eaidk-610
-          - emb3531
-          - fine3399
-          - firefly-rk3399
-          - fmx1-pro
-          - jp-tvbox
-          - h28k
-          - h66k
-          - h68k
-          - h69k
-          - h88k
-          - h88k-v3
-          - h96-max-m2
-          - hs530r
-          - hugsun-x99
-          - ipc-r
-          - king3399
-          - kylin3399
-          - lckfb-tspi
-          - leez
-          - lx-r3s
-          - mrkaio-m68s
-          - nanopc-t6
-          - nanopi-r5c
-          - nanopi-r5s
-          - orangepi-5-plus
-          - panther-x2
-          - r66s
-          - r68s
-          - renegade-rk3328
-          - rk3318-box
-          - rock5b
-          - rock5c
-          - ruisen-box
-          - s905
-          - s905-beelink-mini
-          - s905-mxqpro-plus
-          - s905d
-          - s905d-ki-pro
-          - s905d-sml5442tw
-          - s905l
-          - s905l-aurora-1s
-          - s905l-b860av21u
-          - s905l-mg101
-          - s905l2
-          - s905l2-e900v21e
-          - s905l2-wojia
-          - s905l3
-          - s905l3-cm211
-          - s905l3-unt400g1
-          - s905l3-unt402a
-          - s905l3a
-          - s905l3a-cm311
-          - s905l3a-m401a
-          - s905l3b
-          - s905l3b-e900v21d
-          - s905l3b-e900v22d
-          - s905l3b-e900v22e
-          - s905l3b-ip103h
-          - s905l3b-rg020et-ca
-          - s905l3b-unt403a
-          - s905lb-ipbs9505
-          - s905lb-q96-mini
-          - s905lb-r3300l
-          - s905mb
-          - s905w
-          - s905w-w95
-          - s905w-x96-mini
-          - s905w-x96w
-          - s905x
-          - s905x-b860h
-          - s905x-nexbox-a95x
-          - s905x-t95
-          - s905x-tbee
-          - s905x-tx9
-          - s905x2
-          - s905x2-km3
-          - s905x2-x96max-2g
-          - s905x3
-          - s905x3-2101
-          - s905x3-a100
-          - s905x3-a95xf3
-          - s905x3-a95xf3-gb
-          - s905x3-b
-          - s905x3-h96max
-          - s905x3-hk1
-          - s905x3-ip1001m
-          - s905x3-q1
-          - s905x3-q2
-          - s905x3-tx3
-          - s905x3-tx3-bz
-          - s905x3-ugoosx3
-          - s905x3-whale
-          - s905x3-x88-pro-x3
-          - s905x3-x96air
-          - s905x3-x96air-gb
-          - s905x3-x96max
-          - s912
-          - s912-h96pro-plus
-          - s912-m8s-pro
-          - s912-nexbox-a1
-          - s912-nexbox-a2
-          - s912-onecloudpro
-          - s912-phicomm-t1
-          - s912-t95z-plus
-          - s912-tx8-max
-          - s912-tx9-pro-2g
-          - s912-tx9-pro-3g
-          - s912-x92
-          - s912-zyxq-fake
-          - s922x
-          - s922x-ct2000
-          - s922x-gtking
-          - s922x-gtkingpro-h
-          - s922x-odroid-n2
-          - s922x-reva
-          - s922x-ugoos-am6
-          - seewo-sv21
-          - smart-am40
-          - station-m1
-          - swan1-w28
-          - sw799
-          - tanix-tx6
-          - tb-ls3399
-          - tn3399
-          - tpm312
-          - tqc-a01
-          - tvi3315a
-          - vplus
-          - wxy-oec
-          - xiaobao
-          - yskj
-          - zcube1-max
-          - zk-r39a
-          - zysj
-          - others
-          - diy
-      # customize_rk3399:
-        # description: "Set customize rk3399 devices"
+      # kernel_autopatch:
+        # description: "Set whether to use kernel patches"
         # required: false
-        # default: "tvi3315a:rk3399-tvi3315a.dtb/sw799:rk3399-bozz-sw799.dtb"
+        # default: "true"
+        # type: choice
+        # options:
+          # - true
+          # - false
+          # - others
+      # kernel_toolchain:
+        # description: "Select the kernel compilation toolchain"
+        # required: false
+        # default: "gcc"
+        # type: choice
+        # options:
+          # - clang
+          # - gcc
+          # - gcc-11.3
+          # - gcc-12.2
+          # - gcc-12.3
+          # - gcc-13.2
+          # - gcc-13.3
+          # - others
+      # kernel_compress:
+        # description: "Set the kernel initrd compression format"
+        # required: false
+        # default: "xz"
+        # type: choice
+        # options:
+          # - xz
+          # - gzip
+          # - zstd
+          # - lzma
+          # - others
+      # kernel_sign:
+        # description: "Set the kernel custom signature"
+        # required: false
+        # default: "-dring"
+        # type: choice
+        # options:
+          # - -dring
+          # - -ophub
+          # - -dev
+          # - -beta
+          # - -stable
+          # - -happy-new-year
+          # - -dragon-boat-festival
+          # - -mid-autumn-festival
+          # - -happy-national-day
+          # - -merry-christmas
+          # - -spring-plowing
+          # - -summer-growing
+          # - -autumn-harvesting
+          # - -winter-storing
+          # - -others
 
-      system_storage:
-        description: "Select system image storage type."
-        required: false
-        default: "save"
-        type: choice
-        options:
-          - save
-          - temp
-      builder_name:
-        description: "Set system builder signature"
-        required: false
-        default: "dring"
-        type: choice
-        options:
-          - dring
-          - ophub
-          - flippy
-          - others
+      # kernel_repo:  #用于编译系统所需要的的kernel选择
+        # description: "Set the kernel repository"
+        # required: false
+        # default: "ophub/kernel"
+        # type: choice
+        # options:
+          # - FoxDring/UniversalOS
+          # - ophub/kernel
+          # - breakingbadboy/OpenWrt
+          # - breakings/OpenWrt
+          # - others
+      # kernel_tags:  #用于编译系统所需要的的kernel选择
+        # description: "Set the kernel repository tags"
+        # required: false
+        # default: "dev"
+        # type: choice
+        # options:
+          # - dring
+          # - ophub
+          # - flippy
+          # - dev
+          # - beta
+          # - stable
+          # - h6
+          # - rk3588          
+          # - rk35xx
+          # - others
 
-      armbian_version:
-        description: "Select the Armbian version."
-        required: false
-        default: "noble"
-        type: choice
-        options:
-          - noble  # Ubuntu 24.04
-          - jammy  # Ubuntu 22.04
-          - bookworm  # Debian 12
-          - bullseye  # Debian 11
-          - others
-      armbian_download:
-        description: "Select the Armbian download path."
-        required: false
-        default: "release"
-        type: choice
-        options:
-          - release  # from Github release
-          - url  # from https://armbian.tnahosting.net/dl/odroidn2/archive/
-          - others
-      armbian_url:
-        description: "Set Armbian download url."
-        required: false
-        default: ""
-      armbian_fstype:
-        description: "Select Armbian rootfs type."
-        required: false
-        default: "ext4"
-        type: choice
-        options:
-          - ext4
-          - btrfs
+      # device_soc:
+        # description: "Select device soc."
+        # required: false
+        # default: "s905d_qemu"
+        # type: choice
+        # options:
+          # - all
+          # - s905d_qemu
+          # - s922x_s905x3_s905x2_s912_s905d_s905
+          # - ak88
+          # - beikeyun
+          # - cm3
+          # - e20c
+          # - e25
+          # - e52c
+          # - e54c
+          # - ht2
+          # - h28k
+          # - h66k
+          # - h68k
+          # - h69k
+          # - h69k-max
+          # - h88k
+          # - h88k-v3
+          # - l1pro
+          # - photonicat
+          # - qemu
+          # - r66s
+          # - r68s
+          # - jp-tvbox
+          # - watermelon-pi
+          # - rock5b
+          # - rock5c
+          # - rk3399
+          # - s905
+          # - s905d
+          # - s905x2
+          # - s905x3
+          # - s912
+          # - s922x
+          # - s922x-n2
+          # - vplus
+          # - zcube1-max
+          # - others
+          # - diy
+      # device_board:
+        # description: "Select device board"
+        # required: false
+        # default: "s905d"
+        # type: choice
+        # options:
+          # - all
+          # - s905w_s905x_s905mb_s905l3a_s905l3b_s905x2_s905x3_s912_s922x_s922x-ct2000_s922x-reva
+          # - s905w_s905x_s905x-b860h_s905x-t95_s905x2_s905x3_s905x3-x88-pro-x3_s912_s912-m8s-pro_s912-phicomm-t1_s912-t95z-plus
+          # - s905x3-x88-pro-x3_s912-m8s-pro_s905x-t95_s912-t95z-plus_s905l3-unt400g1_s905lb-r3300l
+          # - s912-x92_s922x_s922x-ct2000_s922x-reva_seewo-sv21_smart-am40_station-m1_sw799_swan1-w28
+          # - tanix-tx6_tb-ls3399_tn3399_tpm312_tqc-a01_tvi3315a_vplus_wxy-oec_xiaobao_yskj_zcube1-max_zk-r39a_zysj
+          # - a311d
+          # - beikeyun
+          # - chainedbox
+          # - crrc
+          # - dg3399
+          # - dg-tn3568
+          # - dlfr100
+          # - e20c
+          # - e25
+          # - eaidk-610
+          # - emb3531
+          # - fine3399
+          # - firefly-rk3399
+          # - fmx1-pro
+          # - jp-tvbox
+          # - h28k
+          # - h66k
+          # - h68k
+          # - h69k
+          # - h88k
+          # - h88k-v3
+          # - h96-max-m2
+          # - hs530r
+          # - hugsun-x99
+          # - ipc-r
+          # - king3399
+          # - kylin3399
+          # - lckfb-tspi
+          # - leez
+          # - lx-r3s
+          # - mrkaio-m68s
+          # - nanopc-t6
+          # - nanopi-r5c
+          # - nanopi-r5s
+          # - orangepi-5-plus
+          # - panther-x2
+          # - r66s
+          # - r68s
+          # - renegade-rk3328
+          # - rk3318-box
+          # - rock5b
+          # - rock5c
+          # - ruisen-box
+          # - s905
+          # - s905-beelink-mini
+          # - s905-mxqpro-plus
+          # - s905d
+          # - s905d-ki-pro
+          # - s905d-sml5442tw
+          # - s905l
+          # - s905l-aurora-1s
+          # - s905l-b860av21u
+          # - s905l-mg101
+          # - s905l2
+          # - s905l2-e900v21e
+          # - s905l2-wojia
+          # - s905l3
+          # - s905l3-cm211
+          # - s905l3-unt400g1
+          # - s905l3-unt402a
+          # - s905l3a
+          # - s905l3a-cm311
+          # - s905l3a-m401a
+          # - s905l3b
+          # - s905l3b-e900v21d
+          # - s905l3b-e900v22d
+          # - s905l3b-e900v22e
+          # - s905l3b-ip103h
+          # - s905l3b-rg020et-ca
+          # - s905l3b-unt403a
+          # - s905lb-ipbs9505
+          # - s905lb-q96-mini
+          # - s905lb-r3300l
+          # - s905mb
+          # - s905w
+          # - s905w-w95
+          # - s905w-x96-mini
+          # - s905w-x96w
+          # - s905x
+          # - s905x-b860h
+          # - s905x-nexbox-a95x
+          # - s905x-t95
+          # - s905x-tbee
+          # - s905x-tx9
+          # - s905x2
+          # - s905x2-km3
+          # - s905x2-x96max-2g
+          # - s905x3
+          # - s905x3-2101
+          # - s905x3-a100
+          # - s905x3-a95xf3
+          # - s905x3-a95xf3-gb
+          # - s905x3-b
+          # - s905x3-h96max
+          # - s905x3-hk1
+          # - s905x3-ip1001m
+          # - s905x3-q1
+          # - s905x3-q2
+          # - s905x3-tx3
+          # - s905x3-tx3-bz
+          # - s905x3-ugoosx3
+          # - s905x3-whale
+          # - s905x3-x88-pro-x3
+          # - s905x3-x96air
+          # - s905x3-x96air-gb
+          # - s905x3-x96max
+          # - s912
+          # - s912-h96pro-plus
+          # - s912-m8s-pro
+          # - s912-nexbox-a1
+          # - s912-nexbox-a2
+          # - s912-onecloudpro
+          # - s912-phicomm-t1
+          # - s912-t95z-plus
+          # - s912-tx8-max
+          # - s912-tx9-pro-2g
+          # - s912-tx9-pro-3g
+          # - s912-x92
+          # - s912-zyxq-fake
+          # - s922x
+          # - s922x-ct2000
+          # - s922x-gtking
+          # - s922x-gtkingpro-h
+          # - s922x-odroid-n2
+          # - s922x-reva
+          # - s922x-ugoos-am6
+          # - seewo-sv21
+          # - smart-am40
+          # - station-m1
+          # - swan1-w28
+          # - sw799
+          # - tanix-tx6
+          # - tb-ls3399
+          # - tn3399
+          # - tpm312
+          # - tqc-a01
+          # - tvi3315a
+          # - vplus
+          # - wxy-oec
+          # - xiaobao
+          # - yskj
+          # - zcube1-max
+          # - zk-r39a
+          # - zysj
+          # - others
+          # - diy
+      # # customize_rk3399:
+        # # description: "Set customize rk3399 devices"
+        # # required: false
+        # # default: "tvi3315a:rk3399-tvi3315a.dtb/sw799:rk3399-bozz-sw799.dtb"
 
-      source_branch:
-        description: "Select the OpenWrt source branch"
-        required: false
-        # 选择建议——深入解析 OpenWRT、LEDE 与 ImmortalWRT：三大路由器固件对比 https://aoun.ltd/?p=124
-        #OpenWrt：如果您需要一个经过长期验证的稳定系统，且对全球社区资源有需求，OpenWRT是首选。https://github.com/openwrt/openwrt
-        #LEDE：如果您希望体验更快速的更新和更高的代码质量，Lean's LEDE能满足您的需求。https://github.com/coolsnowwolf/lede    
-        #ImmortalWrt：如果您是国内用户，想要开箱即用的丰富功能，且需要针对国内网络环境的优化，ImmortalWrt是最佳选择。https://github.com/immortalwrt/immortalwrt        
-        default: "lede-master"
-        type: choice
-        options:
-          - openwrt-main
-          - lede-master
-          - immortalwrt-master
-          - others
-      package_scripts:
-        description: "Set the OpenWrt [package] scripts repository"
-        required: false
-        default: "FoxDring/UniversalOS@main"
-        type: choice
-        options:
-          - FoxDring/UniversalOS@main
-          - ophub/flippy-openwrt-actions@main
-          - unifreq/openwrt_packit@master
-          - others
-      script_diy_path:
-        description: "Set the OpenWrt custom script loading path"
-        required: false
-        default: "Scripts/OpenWrt/DIY/${{ inputs.source_branch }}/diy-part3.sh"
-      gzip_imgs:
-        description: "Set OpenWrt package file compression format"
-        required: false
-        default: ".xz"
-        type: choice
-        options:
-          - auto
-          - .xz
-          - .gz
-          - .zst
-          - .zip
-          - .7z
-          - others
-      docker_hub:
-        description: "Set OpenWrt docker image"
-        required: false
-        default: "dring/openwrt-aarch64"
-        type: choice
-        options:
-          - foxdring/openwrt-aarch64
-          - ophub/openwrt-aarch64
-          - unifreq/openwrt-aarch64
-          - breakingbadboy/openwrt-aarch64
-          - others
+      # system_storage:
+        # description: "Select system image storage type."
+        # required: false
+        # default: "save"
+        # type: choice
+        # options:
+          # - save
+          # - temp
+      # builder_name:
+        # description: "Set system builder signature"
+        # required: false
+        # default: "dring"
+        # type: choice
+        # options:
+          # - dring
+          # - ophub
+          # - flippy
+          # - others
+
+      # armbian_version:
+        # description: "Select the Armbian version."
+        # required: false
+        # default: "noble"
+        # type: choice
+        # options:
+          # - noble  # Ubuntu 24.04
+          # - jammy  # Ubuntu 22.04
+          # - bookworm  # Debian 12
+          # - bullseye  # Debian 11
+          # - others
+      # armbian_download:
+        # description: "Select the Armbian download path."
+        # required: false
+        # default: "release"
+        # type: choice
+        # options:
+          # - release  # from Github release
+          # - url  # from https://armbian.tnahosting.net/dl/odroidn2/archive/
+          # - others
+      # armbian_url:
+        # description: "Set Armbian download url."
+        # required: false
+        # default: ""
+      # armbian_fstype:
+        # description: "Select Armbian rootfs type."
+        # required: false
+        # default: "ext4"
+        # type: choice
+        # options:
+          # - ext4
+          # - btrfs
+
+      # source_branch:
+        # description: "Select the OpenWrt source branch"
+        # required: false
+        # # 选择建议——深入解析 OpenWRT、LEDE 与 ImmortalWRT：三大路由器固件对比 https://aoun.ltd/?p=124
+        # #OpenWrt：如果您需要一个经过长期验证的稳定系统，且对全球社区资源有需求，OpenWRT是首选。https://github.com/openwrt/openwrt
+        # #LEDE：如果您希望体验更快速的更新和更高的代码质量，Lean's LEDE能满足您的需求。https://github.com/coolsnowwolf/lede    
+        # #ImmortalWrt：如果您是国内用户，想要开箱即用的丰富功能，且需要针对国内网络环境的优化，ImmortalWrt是最佳选择。https://github.com/immortalwrt/immortalwrt        
+        # default: "lede-master"
+        # type: choice
+        # options:
+          # - openwrt-main
+          # - lede-master
+          # - immortalwrt-master
+          # - others
+      # package_scripts:
+        # description: "Set the OpenWrt [package] scripts repository"
+        # required: false
+        # default: "FoxDring/UniversalOS@main"
+        # type: choice
+        # options:
+          # - FoxDring/UniversalOS@main
+          # - ophub/flippy-openwrt-actions@main
+          # - unifreq/openwrt_packit@master
+          # - others
+      # script_diy_path:
+        # description: "Set the OpenWrt custom script loading path"
+        # required: false
+        # default: "Scripts/OpenWrt/DIY/${{ inputs.source_branch }}/diy-part3.sh"
+      # gzip_imgs:
+        # description: "Set OpenWrt package file compression format"
+        # required: false
+        # default: ".xz"
+        # type: choice
+        # options:
+          # - auto
+          # - .xz
+          # - .gz
+          # - .zst
+          # - .zip
+          # - .7z
+          # - others
+      # docker_hub:
+        # description: "Set OpenWrt docker image"
+        # required: false
+        # default: "dring/openwrt-aarch64"
+        # type: choice
+        # options:
+          # - foxdring/openwrt-aarch64
+          # - ophub/openwrt-aarch64
+          # - unifreq/openwrt-aarch64
+          # - breakingbadboy/openwrt-aarch64
+          # - others
 
 
 
